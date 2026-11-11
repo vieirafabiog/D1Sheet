@@ -1,6 +1,6 @@
 <div align="center">
 
-# ⚡ D1Sheet
+# 🗄️ D1Sheet
 
 **Turn your Cloudflare D1 database into an instant, serverless OData API for Google AppSheet, Power BI, Excel, and enterprise tools.**
 
@@ -66,12 +66,12 @@ Now, AppSheet connects directly to D1 with zero hassle, instant synchronization,
                             │ Standard OData v4 URL Parameters
                             ▼
 ┌────────────────────────────────────────────────────────┐
-│           ⚡ D1Sheet (Cloudflare Worker)               │
+│           🗄️ D1Sheet (Cloudflare Worker)               │
 │                                                        │
 │  🔒 Timing-Safe HTTP Basic Authentication              │
 │  🔍 Dynamic Schema Introspection ($metadata EDMX)      │
 │  🛡️ OData AST Parser (zero SQL injection risks)         │
-│  ⚡ Parameterized SQLite Compiler                      │
+│  ⚙️ Parameterized SQLite Compiler                      │
 │  📄 Automatic Pagination & NextLink Calculation        │
 └───────────────────────────┬────────────────────────────┘
                             │
