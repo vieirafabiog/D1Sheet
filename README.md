@@ -13,10 +13,10 @@
 
 <br/>
 
-[![Visit Project Website & Simulator](https://img.shields.io/badge/🌐_Project_Website_%26_Interactive_Simulator-Open_Site-F38020?style=for-the-badge)](https://vieirafabiog.github.io/sheetverse/)
+[![Visit Project Website & Simulator](https://img.shields.io/badge/🌐_Project_Website_%26_Interactive_Simulator-Open_Site-F38020?style=for-the-badge)](https://vieirafabiog.github.io/D1Sheet/)
 
 <p align="center">
-  <a href="https://vieirafabiog.github.io/sheetverse/"><strong>🌐 Website & Simulator</strong></a> •
+  <a href="https://vieirafabiog.github.io/D1Sheet/"><strong>🌐 Website & Simulator</strong></a> •
   <a href="#-why-d1sheet">Why D1Sheet?</a> •
   <a href="#-how-it-works">How It Works</a> •
   <a href="#-zero-to-live-in-5-minutes">5-Minute Deploy</a> •
@@ -29,7 +29,7 @@
 </div>
 
 > [!TIP]
-> **🌐 Official Project Website & Live OData-to-SQLite Simulator:** **[https://vieirafabiog.github.io/sheetverse/](https://vieirafabiog.github.io/sheetverse/)** *(Available in English & Portuguese)*
+> **🌐 Official Project Website & Live OData-to-SQLite Simulator:** **[https://vieirafabiog.github.io/D1Sheet/](https://vieirafabiog.github.io/D1Sheet/)** *(Available in English & Portuguese)*
 
 ---
 
@@ -103,8 +103,8 @@ Deploy your own live OData gateway to Cloudflare with 6 straightforward steps.
 
 ### Step 1: Clone and Install
 ```bash
-git clone https://github.com/vieirafabiog/sheetverse.git
-cd sheetverse
+git clone https://github.com/vieirafabiog/D1Sheet.git
+cd D1Sheet
 npm install
 ```
 
