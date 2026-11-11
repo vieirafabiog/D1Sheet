@@ -8,7 +8,7 @@
 [![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020.svg?style=flat-square&logo=cloudflare)](https://workers.cloudflare.com/)
 [![Cloudflare D1](https://img.shields.io/badge/Database-Cloudflare%20D1-orange.svg?style=flat-square&logo=sqlite)](https://developers.cloudflare.com/d1/)
 [![OData v4](https://img.shields.io/badge/Protocol-OData%20v4.0-0078D4.svg?style=flat-square)](https://www.odata.org/)
-[![Tests Passing](https://img.shields.io/badge/Tests-25%2F25%20Passing-success.svg?style=flat-square)]()
+[![Tests Passing](https://img.shields.io/badge/Tests-33%2F33%20Passing-success.svg?style=flat-square)]()
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
 <p align="center">
@@ -277,17 +277,72 @@ GET /odata/{TableName}
 Supports both standard OData parenthesis syntax and REST slash syntax:
 ```http
 GET /odata/Customers(1)
+GET /odata/Customers(Id=1)
 GET /odata/Customers('CUST-001')
 GET /odata/Customers/1
 ```
 
-### 5. Raw Count Endpoint
+### 5. Creating Records (POST — AppSheet Adds)
+Inserts a new record into the SQLite database. Supports Cloudflare D1's native `RETURNING *` to immediately provide generated IDs and default values:
+
+- **Request**: `POST /odata/Customers`
+- **Headers**:
+  ```http
+  Content-Type: application/json
+  Authorization: Basic <credentials>
+  ```
+- **Body**:
+  ```json
+  {
+    "Name": "Diana Prince",
+    "Email": "diana@amazon.com",
+    "IsVip": true,
+    "Balance": 1250.00
+  }
+  ```
+- **Response**: `201 Created`
+- **Response Headers**:
+  - `Location: https://d1sheet.workers.dev/odata/Customers(5)`
+  - `Preference-Applied: return=representation`
+- **Response Body**:
+  ```json
+  {
+    "@odata.context": "https://d1sheet.workers.dev/odata/$metadata#Customers/$entity",
+    "Id": 5,
+    "Name": "Diana Prince",
+    "Email": "diana@amazon.com",
+    "IsVip": true,
+    "Balance": 1250.0,
+    "CreatedAt": "2024-01-15T10:00:00Z"
+  }
+  ```
+
+### 6. Updating Records (PATCH / PUT — AppSheet Updates)
+Updates specific columns of an existing record:
+
+- **Request**: `PATCH /odata/Customers(5)` or `PATCH /odata/Customers(Id=5)`
+- **Body**:
+  ```json
+  {
+    "Balance": 1800.50,
+    "IsVip": false
+  }
+  ```
+- **Response**: `200 OK` with updated entity representation.
+
+### 7. Deleting Records (DELETE — AppSheet Deletes)
+Removes the record identified by its primary key:
+
+- **Request**: `DELETE /odata/Customers(5)` or `DELETE /odata/Customers/5`
+- **Response**: `204 No Content`
+
+### 8. Raw Count Endpoint
 Returns matching record count in `text/plain`:
 ```http
 GET /odata/Customers/$count?$filter=IsVip eq true
 ```
 
-### 6. Automatic Pagination (`@odata.nextLink`)
+### 9. Automatic Pagination (`@odata.nextLink`)
 When a query returns a full page of records, D1Sheet automatically attaches `@odata.nextLink` containing the preserved filters and incremented offset:
 ```json
 {
@@ -372,7 +427,7 @@ Your local gateway is ready at `http://localhost:8787/odata`!
 - [x] Dynamic EDMX `$metadata` Generation
 - [x] Automatic `@odata.nextLink` pagination
 - [x] Full Google AppSheet & Power BI Compatibility
-- [ ] OData v4 Write Operations (`POST`, `PATCH`, `DELETE`) for two-way AppSheet sync
+- [x] OData v4 Write Operations (`POST`, `PATCH`, `PUT`, `DELETE`) with `RETURNING *`
 - [ ] Multi-tenant database routing via headers or subpaths
 
 ---
