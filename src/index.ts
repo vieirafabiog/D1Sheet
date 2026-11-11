@@ -23,18 +23,24 @@ app.use(
   '*',
   cors({
     origin: '*',
-    allowMethods: ['GET', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
+    allowMethods: ['GET', 'HEAD', 'POST', 'PUT', 'PATCH', 'DELETE', 'OPTIONS'],
     allowHeaders: [
       'Authorization',
       'Content-Type',
       'Accept',
       'OData-Version',
       'OData-MaxVersion',
+      'DataServiceVersion',
+      'MaxDataServiceVersion',
       'Prefer',
       'If-Match',
+      'X-Requested-With',
+      'X-CSRF-Token',
+      'Cache-Control',
     ],
     exposeHeaders: [
       'OData-Version',
+      'DataServiceVersion',
       'Content-Type',
       'Location',
       'ETag',
@@ -44,13 +50,17 @@ app.use(
   })
 );
 
-// 2. Global OData response header middleware
+// 3. Request Logging & OData-Version Response Header Middleware
 app.use('*', async (c, next) => {
+  const start = Date.now();
   await next();
-  // Ensure OData-Version is present on responses
   if (!c.res.headers.has('OData-Version')) {
     c.header('OData-Version', '4.0');
   }
+  const ms = Date.now() - start;
+  console.log(
+    `[D1Sheet] ${c.req.method} ${c.req.path} -> ${c.res.status} (${ms}ms) | Accept=${c.req.header('Accept') || '-'} | UA=${c.req.header('User-Agent') || '-'}`
+  );
 });
 
 // 3. Global Error Handling

@@ -30,6 +30,22 @@ function getDatabase(env: Env): D1Database {
   return env.DB;
 }
 
+/**
+ * Returns JSON response with strict OData v4 Content-Type and OData-Version headers.
+ */
+function odataJson(
+  c: any,
+  data: unknown,
+  status: 200 | 201 = 200,
+  extraHeaders: Record<string, string> = {}
+) {
+  return c.json(data, status, {
+    'Content-Type': 'application/json;odata.metadata=minimal;charset=utf-8',
+    'OData-Version': '4.0',
+    ...extraHeaders,
+  });
+}
+
 interface ParsedEntityParam {
   tableName: string;
   keyVal?: string;
@@ -86,8 +102,7 @@ odataRoutes.get('/', async (c) => {
   const tables = await SchemaService.getTableNames(db);
   const doc = SchemaService.generateServiceDocument(tables, serviceRootUrl);
 
-  c.header('Content-Type', 'application/json;odata.metadata=minimal;charset=utf-8');
-  return c.json(doc);
+  return odataJson(c, doc);
 });
 
 // -------------------------------------------------------------
@@ -187,8 +202,7 @@ odataRoutes.get('/:entitySet', async (c) => {
     columnsInfo: schema.columns,
   });
 
-  c.header('Content-Type', 'application/json;odata.metadata=minimal;charset=utf-8');
-  return c.json(response);
+  return odataJson(c, response);
 });
 
 // -------------------------------------------------------------
@@ -262,10 +276,10 @@ odataRoutes.post('/:entitySet', async (c) => {
     schema.columns
   );
 
-  c.header('Location', entityUrl);
-  c.header('Preference-Applied', 'return=representation');
-  c.header('Content-Type', 'application/json;odata.metadata=minimal;charset=utf-8');
-  return c.json(formatted, 201);
+  return odataJson(c, formatted, 201, {
+    Location: entityUrl,
+    'Preference-Applied': 'return=representation',
+  });
 });
 
 // -------------------------------------------------------------
@@ -337,8 +351,7 @@ const handleUpdate = async (c: any) => {
     schema.columns
   );
 
-  c.header('Content-Type', 'application/json;odata.metadata=minimal;charset=utf-8');
-  return c.json(formatted, 200);
+  return odataJson(c, formatted);
 };
 
 odataRoutes.patch('/:entitySet', handleUpdate);
@@ -413,6 +426,5 @@ async function handleSingleEntity(
     schema.columns
   );
 
-  c.header('Content-Type', 'application/json;odata.metadata=minimal;charset=utf-8');
-  return c.json(formatted);
+  return odataJson(c, formatted);
 }
