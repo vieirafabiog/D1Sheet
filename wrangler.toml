@@ -1,0 +1,19 @@
+name = "d1-odata-gateway"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+# Cloudflare D1 Database Binding
+[[d1_databases]]
+binding = "DB"
+database_name = "YOUR_D1_DATABASE_NAME"
+database_id = "YOUR_D1_DATABASE_ID"
+
+# Public environment variables (Do NOT store production passwords here)
+[vars]
+ODATA_SERVICE_ROOT = "/odata"
+DEFAULT_PAGE_SIZE = "100"
+MAX_PAGE_SIZE = "1000"
+BASIC_AUTH_USER = "admin"
+# Note: For production, set BASIC_AUTH_PASS via:
+# npx wrangler secret put BASIC_AUTH_PASS
+
