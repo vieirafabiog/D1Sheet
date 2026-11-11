@@ -91,11 +91,20 @@ odataRoutes.get('/:entitySet', async (c) => {
   const rawParam = c.req.param('entitySet');
   const serviceRootUrl = getServiceRootUrl(c.req.url, c.env.ODATA_SERVICE_ROOT);
 
-  // Check if request matches entity key in parentheses: TableName(keyValue)
+  // Check if request matches entity key in parentheses: TableName(keyValue) or TableName(KeyName=keyValue)
   const keyMatch = rawParam.match(/^([a-zA-Z_][a-zA-Z0-9_]*)\((.+)\)$/);
   if (keyMatch) {
     const tableName = keyMatch[1];
     let keyVal = keyMatch[2].trim();
+
+    // Support named key syntax: TableName(Id=1) or TableName(Id='ALFKI')
+    let explicitKeyCol: string | undefined;
+    if (keyVal.includes('=')) {
+      const eqIdx = keyVal.indexOf('=');
+      explicitKeyCol = keyVal.slice(0, eqIdx).trim();
+      keyVal = keyVal.slice(eqIdx + 1).trim();
+    }
+
     // Strip surrounding quotes if string literal (e.g., 'ALFKI')
     if (
       (keyVal.startsWith("'") && keyVal.endsWith("'")) ||
@@ -104,7 +113,7 @@ odataRoutes.get('/:entitySet', async (c) => {
       keyVal = keyVal.slice(1, -1);
     }
 
-    return handleSingleEntity(c, db, tableName, keyVal, serviceRootUrl);
+    return handleSingleEntity(c, db, tableName, keyVal, serviceRootUrl, explicitKeyCol);
   }
 
   // Otherwise, it is a collection query
@@ -168,10 +177,11 @@ async function handleSingleEntity(
   db: D1Database,
   tableName: string,
   keyVal: string,
-  serviceRootUrl: string
+  serviceRootUrl: string,
+  explicitKeyCol?: string
 ) {
   const schema = await SchemaService.getTableSchema(db, tableName);
-  const pkName = schema.primaryKeys[0];
+  const pkName = explicitKeyCol || schema.primaryKeys[0];
 
   const sql = `SELECT * FROM "${tableName}" WHERE "${pkName}" = ? LIMIT 1`;
   const result = await db.prepare(sql).bind(keyVal).first<Record<string, unknown>>();

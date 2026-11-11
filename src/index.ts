@@ -7,7 +7,18 @@ import { odataRoutes } from './routes/odataRoutes';
 
 const app = new Hono<{ Bindings: Env }>();
 
-// 1. Global CORS Middleware
+// 1. Normalize trailing slash internally without HTTP 301 redirects
+app.use('*', async (c, next) => {
+  if (c.req.path.length > 1 && c.req.path.endsWith('/')) {
+    const newPath = c.req.path.slice(0, -1);
+    const newUrl = new URL(c.req.url);
+    newUrl.pathname = newPath;
+    return app.fetch(new Request(newUrl.toString(), c.req.raw), c.env);
+  }
+  await next();
+});
+
+// 2. Global CORS Middleware
 app.use(
   '*',
   cors({

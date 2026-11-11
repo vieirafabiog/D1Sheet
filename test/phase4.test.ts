@@ -250,6 +250,31 @@ test('GET /odata/Customers(999) returns 404', async () => {
   assert.equal(body.error.code, 'ResourceNotFound');
 });
 
+test('GET /odata/Customers(Id=1) returns single entity using named key', async () => {
+  const req = new Request('http://localhost/odata/Customers(Id=1)', {
+    headers: { Authorization: authHeader },
+  });
+
+  const res = await app.fetch(req, mockEnv);
+  assert.equal(res.status, 200);
+
+  const body = (await res.json()) as any;
+  assert.equal(body.Id, 1);
+  assert.equal(body.Name, 'Alice Johnson');
+});
+
+test('GET /odata/ with trailing slash returns 200 without redirect', async () => {
+  const req = new Request('http://localhost/odata/', {
+    headers: { Authorization: authHeader },
+  });
+
+  const res = await app.fetch(req, mockEnv);
+  assert.equal(res.status, 200);
+
+  const body = (await res.json()) as any;
+  assert.equal(body['@odata.context'], 'http://localhost/odata/$metadata');
+});
+
 test('GET /odata/NonExistentTable returns 404', async () => {
   const req = new Request('http://localhost/odata/NonExistentTable', {
     headers: { Authorization: authHeader },

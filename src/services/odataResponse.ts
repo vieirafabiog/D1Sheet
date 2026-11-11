@@ -100,7 +100,7 @@ export class ODataResponseFormatter {
   }
 
   /**
-   * Normalizes SQLite data types (such as integers 0 and 1 for boolean columns).
+   * Normalizes SQLite data types (booleans 0/1 to true/false, datetimes to ISO 8601).
    */
   private static normalizeRecords(
     records: Record<string, unknown>[],
@@ -116,17 +116,34 @@ export class ODataResponseFormatter {
         .map((col) => col.name)
     );
 
-    if (boolColumns.size === 0) {
-      return records;
-    }
+    const dateColumns = new Set(
+      columnsInfo
+        .filter(
+          (col) =>
+            col.type &&
+            (col.type.toUpperCase().includes('DATE') || col.type.toUpperCase().includes('TIME'))
+        )
+        .map((col) => col.name)
+    );
 
     return records.map((record) => {
       const copy = { ...record };
+
+      // Convert booleans
       for (const colName of boolColumns) {
         if (copy[colName] !== null && copy[colName] !== undefined) {
           copy[colName] = Boolean(copy[colName]);
         }
       }
+
+      // Format ISO 8601 dates for OData DateTimeOffset
+      for (const colName of dateColumns) {
+        const val = copy[colName];
+        if (typeof val === 'string' && /^\d{4}-\d{2}-\d{2} \d{2}:\d{2}:\d{2}/.test(val)) {
+          copy[colName] = val.replace(' ', 'T') + 'Z';
+        }
+      }
+
       return copy;
     });
   }
