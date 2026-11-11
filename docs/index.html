@@ -1,0 +1,513 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>D1Sheet — Serverless OData v4 Gateway for Cloudflare D1</title>
+    <meta
+      name="description"
+      content="Turn any Cloudflare D1 database into a production-ready OData v4 API for Google AppSheet, Power BI, Excel, and enterprise tools."
+    />
+    <link rel="preconnect" href="https://fonts.googleapis.com" />
+    <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700;800&family=JetBrains+Mono:wght@400;500;700&display=swap"
+      rel="stylesheet"
+    />
+    <link rel="stylesheet" href="styles.css" />
+  </head>
+  <body>
+    <div class="bg-glow bg-glow-1"></div>
+    <div class="bg-glow bg-glow-2"></div>
+
+    <!-- Navbar -->
+    <nav class="navbar">
+      <div class="container nav-inner">
+        <a href="#" class="brand">
+          <span class="brand-icon">⚡</span>
+          <span>D1Sheet</span>
+        </a>
+
+        <div class="nav-links">
+          <a href="#why" data-i18n="nav_why">Why D1Sheet</a>
+          <a href="#simulator" data-i18n="nav_sim">Live Simulator</a>
+          <a href="#deploy" data-i18n="nav_deploy">5-Min Deploy</a>
+          <a href="#integrations" data-i18n="nav_connect">Integrations</a>
+        </div>
+
+        <div class="nav-actions">
+          <div class="lang-toggle" role="group" aria-label="Language">
+            <button type="button" class="lang-btn active" data-lang="en">EN</button>
+            <button type="button" class="lang-btn" data-lang="pt">PT</button>
+          </div>
+          <a
+            href="https://github.com"
+            target="_blank"
+            rel="noopener"
+            class="btn btn-secondary btn-sm"
+          >
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor">
+              <path
+                d="M12 0C5.37 0 0 5.37 0 12c0 5.31 3.435 9.795 8.205 11.385.6.105.825-.255.825-.57 0-.285-.015-1.23-.015-2.235-3.015.555-3.795-.735-4.035-1.41-.135-.345-.72-1.41-1.23-1.695-.42-.225-1.02-.78-.015-.795.945-.015 1.62.87 1.845 1.23 1.08 1.815 2.805 1.305 3.495.99.105-.78.42-1.305.765-1.605-2.67-.3-5.46-1.335-5.46-5.925 0-1.305.465-2.385 1.23-3.225-.12-.3-.54-1.53.12-3.18 0 0 1.005-.315 3.3 1.23.96-.27 1.98-.405 3-.405s2.04.135 3 .405c2.295-1.56 3.3-1.23 3.3-1.23.66 1.65.24 2.88.12 3.18.765.84 1.23 1.905 1.23 3.225 0 4.605-2.805 5.625-5.475 5.925.435.375.81 1.095.81 2.22 0 1.605-.015 2.895-.015 3.3 0 .315.225.69.825.57A12.02 12.02 0 0024 12c0-6.63-5.37-12-12-12z"
+              />
+            </svg>
+            GitHub
+          </a>
+        </div>
+      </div>
+    </nav>
+
+    <!-- Hero -->
+    <header class="hero">
+      <div class="container hero-grid">
+        <div>
+          <div class="badge-pill">
+            <span class="badge-dot"></span>
+            <span data-i18n="hero_badge">OData v4 • Cloudflare Workers + D1</span>
+          </div>
+          <h1>
+            <span data-i18n="hero_title_1">Turn Cloudflare D1 into an </span>
+            <span class="gradient-text" data-i18n="hero_title_2">instant OData API.</span>
+          </h1>
+          <p data-i18n="hero_desc">
+            Bridge Google AppSheet, Power BI, Excel, and enterprise tools directly to Cloudflare D1
+            SQLite databases—with zero servers, sub-10ms edge latency, and full read/write CRUD.
+          </p>
+          <div class="hero-cta">
+            <a href="#deploy" class="btn btn-primary" data-i18n="hero_cta_deploy">
+              Deploy in 5 Minutes
+            </a>
+            <a href="#simulator" class="btn btn-secondary" data-i18n="hero_cta_sim">
+              Try Query Simulator
+            </a>
+          </div>
+          <div class="hero-stats">
+            <div class="stat-item">
+              <strong data-i18n="stat_1_val">5M / day</strong>
+              <span data-i18n="stat_1_lbl">Free D1 Reads</span>
+            </div>
+            <div class="stat-item">
+              <strong data-i18n="stat_2_val">0 Servers</strong>
+              <span data-i18n="stat_2_lbl">No IPs or Firewalls</span>
+            </div>
+            <div class="stat-item">
+              <strong data-i18n="stat_3_val">Full CRUD</strong>
+              <span data-i18n="stat_3_lbl">GET, POST, PATCH, DELETE</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="terminal-card">
+          <div class="terminal-header">
+            <div class="terminal-dots">
+              <span class="dot dot-red"></span>
+              <span class="dot dot-yellow"></span>
+              <span class="dot dot-green"></span>
+            </div>
+            <span class="terminal-title">GET /odata/Customers</span>
+          </div>
+          <pre class="terminal-body"><code><span class="tok-comment"># Edge OData Query (Basic Auth)</span>
+<span class="tok-cmd">curl</span> -u admin:secret \
+  <span class="tok-str">"https://d1sheet.workers.dev/odata/Customers?\
+\$filter=Balance gt 1000&\$top=2"</span>
+
+<span class="tok-comment"># HTTP/1.1 200 OK (6ms Edge Response)</span>
+{
+  <span class="tok-key">"@odata.context"</span>: <span class="tok-str">"https://.../odata/$metadata#Customers"</span>,
+  <span class="tok-key">"@odata.nextLink"</span>: <span class="tok-str">"https://.../odata/Customers?$skip=2&$top=2"</span>,
+  <span class="tok-key">"value"</span>: [
+    {
+      <span class="tok-key">"Id"</span>: <span class="tok-num">1</span>,
+      <span class="tok-key">"Name"</span>: <span class="tok-val">"Alice Johnson"</span>,
+      <span class="tok-key">"IsVip"</span>: <span class="tok-num">true</span>,
+      <span class="tok-key">"Balance"</span>: <span class="tok-num">1450.75</span>
+    }
+  ]
+}</code></pre>
+        </div>
+      </div>
+    </header>
+
+    <!-- Why D1Sheet -->
+    <section id="why" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="why_tag">The Architecture Gap</span>
+          <h2 data-i18n="why_title">Why build D1Sheet?</h2>
+          <p data-i18n="why_desc">
+            Modern edge SQL meets universal enterprise connectivity without managing servers or paying
+            for idle cloud instances.
+          </p>
+        </div>
+
+        <div class="cards-3">
+          <article class="card">
+            <div class="card-icon">📊</div>
+            <h3 data-i18n="card_sheets_title">Spreadsheets</h3>
+            <p data-i18n="card_sheets_desc">
+              Great for prototyping, but Google Sheets slows down past a few thousand rows and lacks
+              real relational constraints.
+            </p>
+            <ul class="feature-list">
+              <li>⚠️ <span data-i18n="card_sheets_1">Slow syncs on large tables</span></li>
+              <li>⚠️ <span data-i18n="card_sheets_2">No foreign keys or ACID transactions</span></li>
+              <li>⚠️ <span data-i18n="card_sheets_3">API rate limits under concurrent users</span></li>
+            </ul>
+          </article>
+
+          <article class="card">
+            <div class="card-icon">🖥️</div>
+            <h3 data-i18n="card_sql_title">Traditional SQL Servers</h3>
+            <p data-i18n="card_sql_desc">
+              PostgreSQL or SQL Server require always-on VMs, connection pools, static IPs, and
+              firewall rules opened to external clouds.
+            </p>
+            <ul class="feature-list">
+              <li>💸 <span data-i18n="card_sql_1">Monthly fixed server costs even when idle</span></li>
+              <li>🔧 <span data-i18n="card_sql_2">Complex VPC, SSL & IP allowlist setup</span></li>
+              <li>🌍 <span data-i18n="card_sql_3">Single-region latency spikes</span></li>
+            </ul>
+          </article>
+
+          <article class="card card-highlight">
+            <div class="card-icon">⚡</div>
+            <h3 data-i18n="card_d1_title">D1Sheet + Cloudflare D1</h3>
+            <p data-i18n="card_d1_desc">
+              Serverless SQLite replicated globally on Cloudflare Edge, speaking fluent OData v4 for
+              AppSheet, Power BI, and Excel.
+            </p>
+            <ul class="feature-list">
+              <li>✅ <span data-i18n="card_d1_1">Generous free tier (5M reads / 100k writes)</span></li>
+              <li>✅ <span data-i18n="card_d1_2">Instant HTTP/HTTPS endpoint, zero firewalls</span></li>
+              <li>✅ <span data-i18n="card_d1_3">100% parameterized SQL & dynamic $metadata</span></li>
+            </ul>
+          </article>
+        </div>
+      </div>
+    </section>
+
+    <!-- Architecture Pipeline -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="pipe_tag">Under The Hood</span>
+          <h2 data-i18n="pipe_title">Every Request in 4 Edge Steps</h2>
+        </div>
+
+        <div class="pipeline">
+          <div class="pipe-step">
+            <div class="pipe-num">01 / SECURITY</div>
+            <h4 data-i18n="pipe_1_t">Timing-Safe Auth</h4>
+            <p data-i18n="pipe_1_d">
+              Validates Basic Auth headers via SHA-256 constant-time XOR comparison.
+            </p>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">02 / PARSER</div>
+            <h4 data-i18n="pipe_2_t">AST Query Parser</h4>
+            <p data-i18n="pipe_2_d">
+              Tokenizes $filter, $select, and $orderby into a strict syntax tree.
+            </p>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">03 / COMPILER</div>
+            <h4 data-i18n="pipe_3_t">Parameterized SQL</h4>
+            <p data-i18n="pipe_3_d">
+              Compiles queries using bound ? parameters—immune to SQL injection.
+            </p>
+          </div>
+          <div class="pipe-step">
+            <div class="pipe-num">04 / RESPONSE</div>
+            <h4 data-i18n="pipe_4_t">D1 + OData Envelope</h4>
+            <p data-i18n="pipe_4_d">
+              Executes on D1 SQLite and returns OData v4 JSON with @odata.nextLink.
+            </p>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Interactive Simulator -->
+    <section id="simulator" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="sim_tag">Interactive Sandbox</span>
+          <h2 data-i18n="sim_title">OData → SQLite Translator Simulator</h2>
+          <p data-i18n="sim_desc">
+            Select a preset or tweak query parameters to inspect how D1Sheet compiles OData requests
+            into parameterized SQLite queries.
+          </p>
+        </div>
+
+        <div class="simulator-box">
+          <div class="sim-toolbar">
+            <button type="button" class="preset-btn active" data-preset="filter">
+              GET $filter & $orderby
+            </button>
+            <button type="button" class="preset-btn" data-preset="select">
+              GET $select & contains()
+            </button>
+            <button type="button" class="preset-btn" data-preset="metadata">
+              GET /$metadata (EDMX)
+            </button>
+            <button type="button" class="preset-btn" data-preset="post">
+              POST Insert (RETURNING *)
+            </button>
+            <button type="button" class="preset-btn" data-preset="patch">
+              PATCH Update (Id=1)
+            </button>
+            <button type="button" class="preset-btn" data-preset="delete">
+              DELETE Row
+            </button>
+          </div>
+
+          <div class="sim-url-bar">
+            <span id="simMethod" class="method-badge">GET</span>
+            <input
+              id="simUrl"
+              class="sim-input"
+              type="text"
+              aria-label="OData endpoint URL"
+              value="/odata/Customers?$filter=Balance gt 500"
+            />
+          </div>
+
+          <div class="sim-panes">
+            <div class="sim-pane">
+              <div class="pane-label">
+                <span>Generated D1 SQLite Query</span>
+                <span>100% Parameterized</span>
+              </div>
+              <pre id="simSql" class="sim-code"></pre>
+            </div>
+            <div class="sim-pane">
+              <div class="pane-label">
+                <span>OData v4 Response Payload</span>
+                <span>OData-Version: 4.0</span>
+              </div>
+              <pre id="simResponse" class="sim-code"></pre>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- 5-Min Deploy -->
+    <section id="deploy" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="deploy_tag">Zero to Production</span>
+          <h2 data-i18n="deploy_title">Deploy in 5 Minutes</h2>
+          <p data-i18n="deploy_desc">
+            Six terminal commands to launch your serverless OData gateway on Cloudflare.
+          </p>
+        </div>
+
+        <div class="deploy-grid">
+          <div class="card">
+            <h3 data-i18n="dep_1_t">1. Clone & Install</h3>
+            <p data-i18n="dep_1_d">Download the repository and install Worker dependencies.</p>
+            <div class="code-block-wrap">
+              <code>npm install</code>
+              <button type="button" class="copy-btn">Copy</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 data-i18n="dep_2_t">2. Create D1 Database</h3>
+            <p data-i18n="dep_2_d">
+              Provision your serverless SQLite instance and paste the database_id into wrangler.toml.
+            </p>
+            <div class="code-block-wrap">
+              <code>npx wrangler d1 create d1sheet-db</code>
+              <button type="button" class="copy-btn">Copy</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 data-i18n="dep_3_t">3. Initialize Tables</h3>
+            <p data-i18n="dep_3_d">
+              Push the sample Customers, Products, and Orders schema to your remote D1.
+            </p>
+            <div class="code-block-wrap">
+              <code>npm run db:init:remote</code>
+              <button type="button" class="copy-btn">Copy</button>
+            </div>
+          </div>
+
+          <div class="card">
+            <h3 data-i18n="dep_4_t">4. Set Secret & Deploy</h3>
+            <p data-i18n="dep_4_d">
+              Store your Basic Auth password as an encrypted Cloudflare Secret and publish.
+            </p>
+            <div class="code-block-wrap">
+              <code>npx wrangler secret put BASIC_AUTH_PASS && npm run deploy</code>
+              <button type="button" class="copy-btn">Copy</button>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Integrations -->
+    <section id="integrations" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="int_tag">Plug & Play Clients</span>
+          <h2 data-i18n="int_title">Connect Anywhere via OData v4</h2>
+          <p data-i18n="int_desc">
+            Built for Google AppSheet, compatible with every OData v4 consumer.
+          </p>
+        </div>
+
+        <div class="tabs-header">
+          <button type="button" class="tab-btn active" data-tab="appsheet">Google AppSheet</button>
+          <button type="button" class="tab-btn" data-tab="powerbi">Microsoft Power BI</button>
+          <button type="button" class="tab-btn" data-tab="excel">Microsoft Excel</button>
+          <button type="button" class="tab-btn" data-tab="curl">cURL / REST</button>
+        </div>
+
+        <!-- AppSheet Tab -->
+        <div id="tab-appsheet" class="tab-panel active">
+          <div class="steps-list">
+            <div class="step-row">
+              <div class="step-circle">1</div>
+              <div>
+                <h4>Open Sources in AppSheet</h4>
+                <p>Go to <strong>My Account → Sources → + New Data Source</strong> and select <strong>OData</strong>.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-circle">2</div>
+              <div>
+                <h4>Enter Your Worker Root URL</h4>
+                <p>Set OData Version to <strong>4.0</strong> and paste <code>https://d1sheet.&lt;subdomain&gt;.workers.dev/odata</code>.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-circle">3</div>
+              <div>
+                <h4>Basic Authentication</h4>
+                <p>Use your <code>BASIC_AUTH_USER</code> (e.g. <code>admin</code>) and <code>BASIC_AUTH_PASS</code> secret.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-circle">4</div>
+              <div>
+                <h4>Full Bidirectional Sync</h4>
+                <p>AppSheet automatically discovers tables, Primary Keys, types, and uses POST / PATCH / DELETE.</p>
+              </div>
+            </div>
+          </div>
+
+          <pre class="sim-code"><code># AppSheet Connection Settings
+OData Version : 4.0
+Root URL      : https://d1sheet.&lt;you&gt;.workers.dev/odata
+Auth Type     : Basic
+Username      : admin
+Password      : &lt;BASIC_AUTH_PASS&gt;
+SAP Gateway   : false
+CSRF Required : false</code></pre>
+        </div>
+
+        <!-- Power BI Tab -->
+        <div id="tab-powerbi" class="tab-panel">
+          <div class="steps-list">
+            <div class="step-row">
+              <div class="step-circle">1</div>
+              <div>
+                <h4>Get Data → OData Feed</h4>
+                <p>Open Power BI Desktop, click <strong>Get Data</strong> and select <strong>OData feed</strong>.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-circle">2</div>
+              <div>
+                <h4>Paste Service Root</h4>
+                <p>Enter <code>https://d1sheet.&lt;you&gt;.workers.dev/odata</code> in Basic mode.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-circle">3</div>
+              <div>
+                <h4>Authenticate & Load</h4>
+                <p>Select <strong>Basic</strong> credentials, sign in, and load any table from the Navigator.</p>
+              </div>
+            </div>
+          </div>
+          <pre class="sim-code"><code>// Power Query (M) Generated Connection
+let
+    Source = OData.Feed(
+        "https://d1sheet.&lt;you&gt;.workers.dev/odata",
+        null,
+        [Implementation="2.0"]
+    ),
+    Customers_table = Source{[Name="Customers",Signature="table"]}[Data]
+in
+    Customers_table</code></pre>
+        </div>
+
+        <!-- Excel Tab -->
+        <div id="tab-excel" class="tab-panel">
+          <div class="steps-list">
+            <div class="step-row">
+              <div class="step-circle">1</div>
+              <div>
+                <h4>Data → Get Data → From Other Sources</h4>
+                <p>Choose <strong>From OData Feed</strong> inside Excel's Data ribbon.</p>
+              </div>
+            </div>
+            <div class="step-row">
+              <div class="step-circle">2</div>
+              <div>
+                <h4>Connect with Basic Auth</h4>
+                <p>Paste your Worker <code>/odata</code> endpoint, provide Basic Auth credentials, and refresh live anytime.</p>
+              </div>
+            </div>
+          </div>
+          <pre class="sim-code"><code># Live Refreshable Excel Data
+URL: https://d1sheet.&lt;you&gt;.workers.dev/odata
+Auth: Basic (Username + Secret)
+Features: Query Folding ($filter, $select, $top)</code></pre>
+        </div>
+
+        <!-- cURL Tab -->
+        <div id="tab-curl" class="tab-panel">
+          <div class="steps-list">
+            <div class="step-row">
+              <div class="step-circle">1</div>
+              <div>
+                <h4>Standard HTTP + JSON / XML</h4>
+                <p>Query or mutate D1 rows from any language, webhook, Zapier, or Make scenario.</p>
+              </div>
+            </div>
+          </div>
+          <pre class="sim-code"><code># List tables
+curl -u admin:secret https://d1sheet.&lt;you&gt;.workers.dev/odata
+
+# Insert record
+curl -X POST -u admin:secret \
+  -H "Content-Type: application/json" \
+  -d '{"Name":"Alice","Balance":500}' \
+  https://d1sheet.&lt;you&gt;.workers.dev/odata/Customers</code></pre>
+        </div>
+      </div>
+    </section>
+
+    <footer>
+      <div class="container footer-inner">
+        <div>
+          <strong>⚡ D1Sheet</strong> — <span data-i18n="footer_note">Built with TypeScript, Hono & Cloudflare Workers. MIT License.</span>
+        </div>
+        <div class="footer-links">
+          <a href="#why">Architecture</a>
+          <a href="#simulator">Simulator</a>
+          <a href="#deploy">Deploy</a>
+          <a href="#integrations">Integrations</a>
+        </div>
+      </div>
+    </footer>
+
+    <script src="app.js"></script>
+  </body>
+</html>
