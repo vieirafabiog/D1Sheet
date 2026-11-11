@@ -11,8 +11,12 @@
 [![Tests Passing](https://img.shields.io/badge/Tests-33%2F33%20Passing-success.svg?style=flat-square)]()
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
+<br/>
+
+[![Visit Project Website & Simulator](https://img.shields.io/badge/🌐_Project_Website_%26_Interactive_Simulator-Open_Site-F38020?style=for-the-badge)](https://vieirafabiog.github.io/sheetverse/)
+
 <p align="center">
-  <a href="https://vieirafabiog.github.io/sheetverse/">🌐 Live Docs & Simulator</a> •
+  <a href="https://vieirafabiog.github.io/sheetverse/"><strong>🌐 Website & Simulator</strong></a> •
   <a href="#-why-d1sheet">Why D1Sheet?</a> •
   <a href="#-how-it-works">How It Works</a> •
   <a href="#-zero-to-live-in-5-minutes">5-Minute Deploy</a> •
@@ -22,9 +26,12 @@
   <a href="#-local-development">Local Dev</a>
 </p>
 
----
-
 </div>
+
+> [!TIP]
+> **🌐 Official Project Website & Live OData-to-SQLite Simulator:** **[https://vieirafabiog.github.io/sheetverse/](https://vieirafabiog.github.io/sheetverse/)** *(Available in English & Portuguese)*
+
+---
 
 ## 💡 Why D1Sheet?
 
