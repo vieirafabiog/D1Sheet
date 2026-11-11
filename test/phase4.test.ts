@@ -261,3 +261,4 @@ test('GET /odata/NonExistentTable returns 404', async () => {
   const body = (await res.json()) as any;
   assert.equal(body.error.code, 'ResourceNotFound');
 });
+

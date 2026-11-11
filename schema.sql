@@ -49,3 +49,4 @@ INSERT OR IGNORE INTO Orders (OrderId, CustomerId, TotalAmount, Status) VALUES
 (1003, 2, 199.00, 'Pending'),
 (1004, 3, 749.40, 'Completed'),
 (1005, 4, 129.99, 'Cancelled');
+

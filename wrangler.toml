@@ -1,11 +1,11 @@
-name = "d1-odata-gateway"
+name = "d1sheet"
 main = "src/index.ts"
 compatibility_date = "2024-09-23"
 
 # Cloudflare D1 Database Binding
 [[d1_databases]]
 binding = "DB"
-database_name = "YOUR_D1_DATABASE_NAME"
+database_name = "d1sheet-db"
 database_id = "YOUR_D1_DATABASE_ID"
 
 # Public environment variables (Do NOT store production passwords here)

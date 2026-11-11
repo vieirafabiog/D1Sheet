@@ -1,7 +1,7 @@
 {
-  "name": "d1-odata-gateway",
+  "name": "d1sheet",
   "version": "1.0.0",
-  "description": "OData v2/v4 compatible gateway for Cloudflare D1 with Basic Authentication",
+  "description": "High-performance OData v4 gateway connecting Google AppSheet, Power BI, and BI tools to Cloudflare D1",
   "main": "src/index.ts",
   "scripts": {
     "dev": "wrangler dev",

@@ -30,7 +30,7 @@ test('Request without Authorization returns 401 and WWW-Authenticate', async () 
 
   const res = await app.fetch(req, mockEnv);
   assert.equal(res.status, 401);
-  assert.ok(res.headers.get('WWW-Authenticate')?.includes('Basic realm="OData D1 Gateway"'));
+  assert.ok(res.headers.get('WWW-Authenticate')?.includes('Basic realm="D1Sheet Gateway"'));
   assert.equal(res.headers.get('OData-Version'), '4.0');
 
   const body = await res.json() as any;

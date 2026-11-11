@@ -80,7 +80,8 @@ app.use('*', basicAuthMiddleware);
 app.get('/', (c) => {
   const serviceRoot = c.env.ODATA_SERVICE_ROOT || '/odata';
   return c.json({
-    name: 'Cloudflare D1 OData Gateway',
+    name: 'D1Sheet',
+    description: 'High-performance OData v4 Gateway for Cloudflare D1',
     version: '1.0.0',
     protocol: 'OData v4.0',
     serviceRoot,

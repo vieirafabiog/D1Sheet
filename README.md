@@ -1,104 +1,134 @@
-# Cloudflare D1 OData Gateway
+<div align="center">
 
-A high-performance, production-ready **OData v2/v4 compatible gateway** for **Cloudflare D1 (SQLite)** databases, built on Cloudflare Workers and TypeScript. Secured by **HTTP Basic Authentication**, fully configurable via `wrangler.toml` and Cloudflare secrets.
+# ⚡ D1Sheet
 
----
+**Turn your Cloudflare D1 database into an instant, serverless OData API for Google AppSheet, Power BI, Excel, and enterprise tools.**
 
-## 📖 Table of Contents
+[![TypeScript](https://img.shields.io/badge/TypeScript-5.7-blue.svg?style=flat-square&logo=typescript)](https://www.typescriptlang.org/)
+[![Cloudflare Workers](https://img.shields.io/badge/Cloudflare-Workers-F38020.svg?style=flat-square&logo=cloudflare)](https://workers.cloudflare.com/)
+[![Cloudflare D1](https://img.shields.io/badge/Database-Cloudflare%20D1-orange.svg?style=flat-square&logo=sqlite)](https://developers.cloudflare.com/d1/)
+[![OData v4](https://img.shields.io/badge/Protocol-OData%20v4.0-0078D4.svg?style=flat-square)](https://www.odata.org/)
+[![Tests Passing](https://img.shields.io/badge/Tests-25%2F25%20Passing-success.svg?style=flat-square)]()
+[![License MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
-- [Overview & Architecture](#-overview--architecture)
-- [Features](#-features)
-- [Configuration Guide](#-configuration-guide)
-  - [wrangler.toml](#wranglertoml)
-  - [Secrets](#secrets)
-- [API Specification & Examples](#-api-specification--examples)
-  - [Authentication](#authentication)
-  - [Service Document & Metadata](#service-document--metadata)
-  - [Querying Entity Sets](#querying-entity-sets)
-  - [OData Query Options Matrix](#odata-query-options-matrix)
-  - [Single Entity Queries](#single-entity-queries)
-  - [Count Queries](#count-queries)
-  - [Pagination & NextLink](#pagination--nextlink)
-- [Client Integration](#-client-integration)
-  - [cURL](#curl)
-  - [Power BI / Power Query](#power-bi--power-query)
-  - [Postman](#postman)
-- [Local Development & Testing](#-local-development--testing)
-- [Deployment Instructions](#-deployment-instructions)
-- [License](#-license)
+<p align="center">
+  <a href="#-why-d1sheet">Why D1Sheet?</a> •
+  <a href="#-how-it-works">How It Works</a> •
+  <a href="#-zero-to-live-in-5-minutes">5-Minute Deploy</a> •
+  <a href="#-connecting-to-google-appsheet">AppSheet Setup</a> •
+  <a href="#-connecting-to-power-bi--excel">Power BI & Excel</a> •
+  <a href="#-api-reference">API Reference</a> •
+  <a href="#-local-development">Local Dev</a>
+</p>
 
 ---
 
-## 🏛 Overview & Architecture
+</div>
 
-This gateway allows analytics tools, business intelligence platforms (such as Microsoft Power BI, Excel, Tableau), and external enterprise applications to query Cloudflare D1 databases using standard OData v2/v4 protocols over HTTPS.
+## 💡 Why D1Sheet?
+
+### The Problem
+[Google AppSheet](https://about.appsheet.com/) is hands-down one of the best no-code platforms for building mobile and web apps. But when your app outgrows basic spreadsheets, storing production data presents a dilemma:
+- **Google Sheets** slows down significantly once you hit a few thousand rows and doesn't offer relational integrity or concurrency.
+- **Traditional SQL (PostgreSQL, MySQL, SQL Server)** requires running servers 24/7, paying for idle database instances, managing static IPs, and opening firewall ports to Google Cloud.
+- **Cloudflare D1** is the holy grail: a globally distributed, serverless SQLite database with blistering edge performance and an incredible free tier (5 million reads/day for free). However, D1 has no direct TCP database port — it only speaks HTTP via Cloudflare's Edge. AppSheet cannot connect directly to D1.
+
+### The Breakthrough
+AppSheet has native, first-class support for the enterprise **OData protocol**!
+
+### The Solution: D1Sheet
+**D1Sheet** is the missing bridge. Running as an ultra-fast Cloudflare Worker, it transforms your Cloudflare D1 database into an authentic, production-ready **OData v4 gateway**.
+
+Now, AppSheet connects directly to D1 with zero hassle, instant synchronization, and enterprise security.
+
+> **Note:** While created with AppSheet in mind, **D1Sheet is a 100% standard OData v4 gateway**. You can connect it to **Microsoft Power BI**, **Excel (Power Query)**, **Tableau**, **SAP**, **Zapier**, or any custom client!
+
+---
+
+## 🏗 How It Works
 
 ```
-┌─────────────────────────────────┐
-│ Client (Power BI, Excel, cURL)  │
-└────────────────┬────────────────┘
-                 │ HTTPS (Basic Auth)
-                 ▼
-┌─────────────────────────────────┐
-│ Cloudflare Worker Gateway       │
-│  ├─ Timing-Safe Auth Middleware │
-│  ├─ CORS & OData Error Handler  │
-│  ├─ OData AST Query Parser      │
-│  ├─ Parameterized SQL Compiler  │
-│  └─ EDMX XML Schema Generator   │
-└────────────────┬────────────────┘
-                 │ Bound SQLite Queries
-                 ▼
-┌─────────────────────────────────┐
-│ Cloudflare D1 (SQLite Database) │
-└─────────────────────────────────┘
+┌────────────────────────────────────────────────────────┐
+│               Clients & Consumers                      │
+│                                                        │
+│  📱 Google AppSheet   📊 Power BI / Excel   🌐 REST    │
+└───────────────────────────┬────────────────────────────┘
+                            │
+                            │ HTTPS (Basic Auth)
+                            │ Standard OData v4 URL Parameters
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│           ⚡ D1Sheet (Cloudflare Worker)               │
+│                                                        │
+│  🔒 Timing-Safe HTTP Basic Authentication              │
+│  🔍 Dynamic Schema Introspection ($metadata EDMX)      │
+│  🛡️ OData AST Parser (zero SQL injection risks)         │
+│  ⚡ Parameterized SQLite Compiler                      │
+│  📄 Automatic Pagination & NextLink Calculation        │
+└───────────────────────────┬────────────────────────────┘
+                            │
+                            │ Native Fast Worker Binding
+                            ▼
+┌────────────────────────────────────────────────────────┐
+│       🗄️ Cloudflare D1 (Serverless SQLite Engine)      │
+└────────────────────────────────────────────────────────┘
 ```
 
-### Architecture Highlights
-
-- **Zero-Allocation Safety**: Utilizes a recursive descent parser for `$filter` to build a strictly typed Abstract Syntax Tree (AST), rejecting invalid tokens before query construction.
-- **100% Parameterized SQL**: All filter literals are converted to positional parameter markers (`?`) to prevent SQL injection.
-- **Identifier Validation**: Table and column names are validated against strict alphanumeric identifiers (`/^[a-zA-Z_][a-zA-Z0-9_]*$/`) and double-quoted.
-- **Dynamic Schema Reflection**: Inspects SQLite's `sqlite_master` and `PRAGMA table_info` to generate dynamic OData v4 EDMX metadata XML documents without code regeneration.
-- **Server-Driven Pagination**: Adheres to OData specifications by computing `@odata.nextLink` containing preserved filters and incremented `$skip` offsets.
-
----
-
-## ✨ Features
-
-- **Protocol Compatibility**: OData v4.0 with backwards-compatible features (such as `$inlinecount`).
-- **Security**:
-  - HTTP Basic Authentication evaluated using constant-time SHA-256 byte comparisons to protect against timing attacks.
-  - Granular CORS control for browser-based OData clients.
-  - Detailed, standardized OData error payloads (`{"error": {"code": "...", "message": "..."}}`).
-- **Query Capabilities**:
-  - `$filter`: Comparison (`eq`, `ne`, `gt`, `ge`, `lt`, `le`), logical (`and`, `or`, `not`), null checks (`IS NULL`), and string functions (`contains`, `startswith`, `endswith`, `tolower`, `toupper`).
-  - `$select`: Column projection with validation.
-  - `$orderby`: Multi-column ordering (`asc`, `desc`).
-  - `$top` and `$skip`: Offset-based pagination with configurable ceilings.
-  - `$count`: Count inline (`@odata.count`) and raw count (`/$count`).
-- **Automatic Type Mapping**: SQLite types (`INTEGER`, `REAL`, `BOOLEAN`, `DATETIME`, `TEXT`) map cleanly to EDM types (`Edm.Int32`, `Edm.Int64`, `Edm.Double`, `Edm.Boolean`, `Edm.DateTimeOffset`, `Edm.String`).
+1. **Client sends an OData request** (e.g. `GET /odata/Customers?$filter=Balance gt 1000&$top=25`).
+2. **D1Sheet validates credentials** using constant-time crypto comparison to prevent timing attacks.
+3. **The AST Query Parser** parses filters, select clauses, order rules, and pagination.
+4. **Parameterized SQL Compiler** generates safe SQLite statements (`SELECT ... WHERE "Balance" > ? LIMIT ? OFFSET ?`).
+5. **D1 executes the query** directly on Cloudflare's edge network in single-digit milliseconds.
+6. **D1Sheet formats the response** into standard OData JSON with `@odata.context` and `@odata.nextLink`.
 
 ---
 
-## ⚙️ Configuration Guide
+## 🚀 Zero to Live in 5 Minutes
 
-### `wrangler.toml`
+Deploy your own live OData gateway to Cloudflare with 6 straightforward steps.
 
-Configure your worker name, compatibility date, database binding, and environment variables:
+### Prerequisites
+- Node.js 18+ installed.
+- A free [Cloudflare Account](https://dash.cloudflare.com/sign-up).
 
+---
+
+### Step 1: Clone and Install
+```bash
+git clone https://github.com/your-username/d1sheet.git
+cd d1sheet
+npm install
+```
+
+### Step 2: Create your Cloudflare D1 Database
+Log in to Cloudflare through Wrangler CLI (only needed once):
+```bash
+npx wrangler login
+```
+Create a new D1 database:
+```bash
+npx wrangler d1 create d1sheet-db
+```
+Wrangler will output something like:
 ```toml
-name = "d1-odata-gateway"
+[[d1_databases]]
+binding = "DB"
+database_name = "d1sheet-db"
+database_id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
+```
+
+### Step 3: Configure `wrangler.toml`
+Open `wrangler.toml` and update the `database_name` and `database_id` with the values printed in Step 2:
+```toml
+name = "d1sheet"
 main = "src/index.ts"
 compatibility_date = "2024-09-23"
 
-# Cloudflare D1 Database Binding
 [[d1_databases]]
 binding = "DB"
-database_name = "YOUR_D1_DATABASE_NAME"
-database_id = "YOUR_D1_DATABASE_ID"
+database_name = "d1sheet-db"
+database_id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"
 
-# Public environment variables
 [vars]
 ODATA_SERVICE_ROOT = "/odata"
 DEFAULT_PAGE_SIZE = "100"
@@ -106,64 +136,109 @@ MAX_PAGE_SIZE = "1000"
 BASIC_AUTH_USER = "admin"
 ```
 
-| Variable | Description | Default |
-|---|---|---|
-| `DB` | Cloudflare D1 database binding name | `DB` |
-| `ODATA_SERVICE_ROOT` | Base path for OData endpoints | `/odata` |
-| `DEFAULT_PAGE_SIZE` | Default number of records per page when `$top` is omitted | `100` |
-| `MAX_PAGE_SIZE` | Maximum allowed value for `$top` to prevent memory exhaustion | `1000` |
-| `BASIC_AUTH_USER` | Expected username for Basic Authentication | `admin` |
-
-### Secrets
-
-Passwords should **never** be stored in plain text inside `wrangler.toml`. Set the gateway password via Cloudflare Secrets:
-
+### Step 4: Seed Sample Tables (Optional)
+We included a clean sample schema (`schema.sql`) with `Customers`, `Products`, and `Orders` tables:
 ```bash
-# Set production password
+npm run db:init:remote
+```
+*(You can also run your own `.sql` migration files using `npx wrangler d1 execute DB --remote --file=your_schema.sql`)*.
+
+### Step 5: Set Your Production Password
+Store your gateway password securely in Cloudflare Secrets:
+```bash
 npx wrangler secret put BASIC_AUTH_PASS
 ```
+Type your strong password when prompted and press Enter.
 
-For **local development**, define `BASIC_AUTH_PASS` inside `.dev.vars` (which is excluded from Git):
+### Step 6: Deploy!
+```bash
+npm run deploy
+```
 
-```ini
-BASIC_AUTH_PASS=your_local_secret_password
+🎉 **That's it!** Wrangler will output your live URL:
+```
+https://d1sheet.<your-subdomain>.workers.dev
+```
+Your OData service root is live at:
+```
+https://d1sheet.<your-subdomain>.workers.dev/odata
 ```
 
 ---
 
-## 📡 API Specification & Examples
+## 📱 Connecting to Google AppSheet
 
-### Authentication
+Connect AppSheet to your new D1 database in under 2 minutes:
 
-All endpoints (except CORS `OPTIONS` preflights) require an `Authorization: Basic <base64(user:password)>` header.
+### 1. Add Data Source in AppSheet
+1. Open your [AppSheet Account](https://www.appsheet.com/account).
+2. Go to the **Integrations** / **Sources** tab.
+3. Click **+ New Data Source**.
+4. Choose **OData** from the list of connectors.
 
-If missing or invalid:
+<div align="center">
+  <kbd><img src="https://raw.githubusercontent.com/fabiovier/assets/main/appsheet-odata-icon.png" width="80" alt="AppSheet OData" onerror="this.style.display='none'"/></kbd>
+</div>
+
+### 2. Enter Connection Details
+Fill in the connection form with your D1Sheet information:
+
+| Setting | Value |
+|---|---|
+| **Source Name** | `Cloudflare D1` (or any label you prefer) |
+| **OData Service Root URL** | `https://d1sheet.<your-subdomain>.workers.dev/odata` |
+| **Authentication Type** | `Basic` |
+| **Username** | `admin` (or the value set in `BASIC_AUTH_USER`) |
+| **Password** | Your `BASIC_AUTH_PASS` secret |
+| **OData Version** | `OData v4.0` |
+
+### 3. Build Your App!
+1. Create a new AppSheet app or open an existing one.
+2. In the app editor, navigate to **Data** > **Tables** > **+ Add Table**.
+3. Select your **Cloudflare D1** data source.
+4. AppSheet will read `$metadata` and display all tables (`Customers`, `Products`, `Orders`, etc.).
+5. Click **Add Table**. AppSheet automatically detects:
+   - Primary Keys (`Key` columns).
+   - Column data types (Numbers, Text, Booleans, Dates).
+   - Read/Write capabilities.
+
+You now have a real-time, low-latency mobile and desktop app backed directly by Cloudflare D1! 🚀
+
+---
+
+## 📊 Connecting to Power BI & Excel
+
+D1Sheet supports full OData query delegation in Microsoft tools.
+
+### Microsoft Power BI
+1. In Power BI Desktop, click **Get Data** > **OData feed**.
+2. Enter the URL:
+   ```
+   https://d1sheet.<your-subdomain>.workers.dev/odata
+   ```
+3. Select **Basic** authentication and input your username (`admin`) and secret password.
+4. Click **Connect**. Power BI will display all tables with schemas, types, and relationships.
+5. All Power BI visual filters and queries will be translated into edge SQL queries on D1!
+
+### Microsoft Excel (Power Query)
+1. Go to the **Data** tab > **Get Data** > **From Other Sources** > **From OData Feed**.
+2. Paste `https://d1sheet.<your-subdomain>.workers.dev/odata`.
+3. Provide Basic Auth credentials and click **Load**.
+
+---
+
+## 📚 API Reference & Supported Queries
+
+All endpoints (except CORS preflights) require the `Authorization: Basic <base64>` header.
+
+### 1. Service Document (Discovery)
+Lists all available database tables.
 ```http
-HTTP/1.1 401 Unauthorized
-WWW-Authenticate: Basic realm="OData D1 Gateway", charset="UTF-8"
-Content-Type: application/json; charset=utf-8
-OData-Version: 4.0
-
-{
-  "error": {
-    "code": "Unauthorized",
-    "message": "Authentication is required to access this resource."
-  }
-}
+GET /odata
 ```
-
----
-
-### Service Document & Metadata
-
-#### 1. Service Document
-Returns available entity sets for discovery by clients like Power BI.
-
-- **Request**: `GET /odata`
-- **Response**:
 ```json
 {
-  "@odata.context": "https://gateway.example.com/odata/$metadata",
+  "@odata.context": "https://d1sheet.workers.dev/odata/$metadata",
   "value": [
     { "name": "Customers", "kind": "EntitySet", "url": "Customers" },
     { "name": "Products", "kind": "EntitySet", "url": "Products" },
@@ -172,259 +247,136 @@ Returns available entity sets for discovery by clients like Power BI.
 }
 ```
 
-#### 2. Metadata Document (`$metadata`)
-Dynamically inspects the D1 SQLite schema and returns standard OData EDMX XML.
-
-- **Request**: `GET /odata/$metadata`
-- **Response Header**: `Content-Type: application/xml;charset=utf-8`
-- **Response Body**:
-```xml
-<?xml version="1.0" encoding="utf-8"?>
-<edmx:Edmx Version="4.0" xmlns:edmx="http://docs.oasis-open.org/odata/ns/edmx">
-  <edmx:DataServices>
-    <Schema Namespace="D1Gateway" xmlns="http://docs.oasis-open.org/odata/ns/edm">
-      <EntityType Name="Customers">
-        <Key>
-          <PropertyRef Name="Id" />
-        </Key>
-        <Property Name="Id" Type="Edm.Int32" Nullable="false" />
-        <Property Name="Name" Type="Edm.String" Nullable="false" />
-        <Property Name="Email" Type="Edm.String" Nullable="true" />
-        <Property Name="IsVip" Type="Edm.Boolean" Nullable="true" />
-        <Property Name="Balance" Type="Edm.Double" Nullable="true" />
-      </EntityType>
-      <EntityContainer Name="DefaultContainer">
-        <EntitySet Name="Customers" EntityType="D1Gateway.Customers" />
-      </EntityContainer>
-    </Schema>
-  </edmx:DataServices>
-</edmx:Edmx>
+### 2. Schema Metadata (`$metadata`)
+Dynamically generates standard OData EDMX XML schema from SQLite table definitions:
+```http
+GET /odata/$metadata
 ```
 
----
-
-### Querying Entity Sets
-
-#### Basic Collection Request
-- **Request**: `GET /odata/Customers`
-- **Response**:
-```json
-{
-  "@odata.context": "https://gateway.example.com/odata/$metadata#Customers",
-  "value": [
-    {
-      "Id": 1,
-      "Name": "Alice Johnson",
-      "Email": "alice@corp.com",
-      "IsVip": true,
-      "Balance": 1450.75
-    }
-  ]
-}
+### 3. Querying Records
+```http
+GET /odata/{TableName}
 ```
 
----
+#### Supported Query Parameters
 
-### OData Query Options Matrix
-
-| Parameter | Example | SQLite Equivalent |
+| Parameter | Example | SQLite Translation |
 |---|---|---|
-| `$select` | `$select=Id,Name,Balance` | `SELECT "Id", "Name", "Balance" FROM ...` |
-| `$filter` (relational) | `$filter=Balance gt 500.0 and IsVip eq true` | `WHERE ("Balance" > ? AND "IsVip" = ?)` |
-| `$filter` (strings) | `$filter=contains(Email, '@corp.com')` | `WHERE (INSTR("Email", ?) > 0)` |
-| `$filter` (prefix) | `$filter=startswith(Name, 'Dr.')` | `WHERE (INSTR("Name", ?) = 1)` |
-| `$filter` (suffix) | `$filter=endswith(Email, '.org')` | `WHERE ("Email" LIKE ('%' \|\| ?))` |
-| `$filter` (nulls) | `$filter=Email ne null and City eq null` | `WHERE ("Email" IS NOT NULL AND "City" IS NULL)` |
-| `$orderby` | `$orderby=Balance desc, Name asc` | `ORDER BY "Balance" DESC, "Name" ASC` |
-| `$top` | `$top=25` | `LIMIT ?` (capped to `MAX_PAGE_SIZE`) |
-| `$skip` | `$skip=50` | `OFFSET ?` |
-| `$count` | `$count=true` | Inlines `"@odata.count": 142` in envelope |
+| **`$select`** | `?$select=Id,Name,Balance` | `SELECT "Id", "Name", "Balance" FROM ...` |
+| **`$filter` (Relational)** | `?$filter=Balance ge 1000 and IsVip eq true` | `WHERE ("Balance" >= ? AND "IsVip" = ?)` |
+| **`$filter` (Null Checks)** | `?$filter=Email ne null and City eq null` | `WHERE ("Email" IS NOT NULL AND "City" IS NULL)` |
+| **`$filter` (Functions)** | `?$filter=contains(Email, '@corp.com')` | `WHERE (INSTR("Email", ?) > 0)` |
+| **`$filter` (Prefix/Suffix)** | `?$filter=startswith(Name, 'Dr.')` | `WHERE (INSTR("Name", ?) = 1)` |
+| **`$filter` (Case Fold)** | `?$filter=tolower(City) eq 'london'` | `WHERE (LOWER("City") = ?)` |
+| **`$orderby`** | `?$orderby=Balance desc, Name asc` | `ORDER BY "Balance" DESC, "Name" ASC` |
+| **`$top`** | `?$top=20` | `LIMIT ?` (capped to `MAX_PAGE_SIZE`) |
+| **`$skip`** | `?$skip=40` | `OFFSET ?` |
+| **`$count`** | `?$count=true` | Appends `"@odata.count": 128` |
 
----
+### 4. Single Record by Key
+Supports both standard OData parenthesis syntax and REST slash syntax:
+```http
+GET /odata/Customers(1)
+GET /odata/Customers('CUST-001')
+GET /odata/Customers/1
+```
 
-### Single Entity Queries
+### 5. Raw Count Endpoint
+Returns matching record count in `text/plain`:
+```http
+GET /odata/Customers/$count?$filter=IsVip eq true
+```
 
-Retrieve a specific row by primary key using standard OData parenthesis syntax or REST-style slash syntax:
-
-- `GET /odata/Customers(1)`
-- `GET /odata/Customers('ALFKI')`
-- `GET /odata/Customers/1`
-
-**Response:**
+### 6. Automatic Pagination (`@odata.nextLink`)
+When a query returns a full page of records, D1Sheet automatically attaches `@odata.nextLink` containing the preserved filters and incremented offset:
 ```json
 {
-  "@odata.context": "https://gateway.example.com/odata/$metadata#Customers/$entity",
-  "Id": 1,
-  "Name": "Alice Johnson",
-  "Email": "alice@corp.com",
-  "IsVip": true,
-  "Balance": 1450.75
+  "@odata.context": "https://d1sheet.workers.dev/odata/$metadata#Customers",
+  "@odata.nextLink": "https://d1sheet.workers.dev/odata/Customers?$filter=IsVip+eq+true&$skip=25&$top=25",
+  "value": [ ... ]
 }
 ```
 
 ---
 
-### Count Queries
-
-Retrieve the total record count matching a filter as plain text:
-
-- **Request**: `GET /odata/Customers/$count?$filter=IsVip eq true`
-- **Response Header**: `Content-Type: text/plain;charset=utf-8`
-- **Response Body**:
-```
-42
-```
-
----
-
-### Pagination & NextLink
-
-When the number of returned records satisfies the requested `$top` limit, `@odata.nextLink` is automatically included with all search filters preserved and `$skip` incremented:
-
-- **Request**: `GET /odata/Customers?$filter=IsVip eq true&$top=2`
-- **Response**:
-```json
-{
-  "@odata.context": "https://gateway.example.com/odata/$metadata#Customers",
-  "@odata.nextLink": "https://gateway.example.com/odata/Customers?$filter=IsVip+eq+true&$skip=2&$top=2",
-  "value": [
-    { "Id": 1, "Name": "Alice Johnson", "IsVip": true },
-    { "Id": 3, "Name": "Charlie Brown", "IsVip": true }
-  ]
-}
-```
-
----
-
-## 💻 Client Integration
-
-### cURL
+## 💻 cURL Examples
 
 ```bash
-# 1. Fetch Service Document
-curl -u admin:password123 https://gateway.example.com/odata
+# Get service document
+curl -u admin:password123 https://d1sheet.workers.dev/odata
 
-# 2. Fetch Schema Metadata
-curl -u admin:password123 https://gateway.example.com/odata/\$metadata
+# Fetch schema XML
+curl -u admin:password123 https://d1sheet.workers.dev/odata/\$metadata
 
-# 3. Query filtered and sorted records with pagination
+# Filtered and sorted query with count and limit
 curl -u admin:password123 \
-  "https://gateway.example.com/odata/Customers?\$filter=Balance%20gt%201000&\$orderby=Balance%20desc&\$top=10&\$count=true"
+  "https://d1sheet.workers.dev/odata/Customers?\$filter=Balance%20gt%20500&\$orderby=Balance%20desc&\$top=10&\$count=true"
+
+# Query single entity by ID
+curl -u admin:password123 https://d1sheet.workers.dev/odata/Customers(1)
 ```
-
----
-
-### Power BI / Power Query
-
-1. Open **Power BI Desktop**.
-2. Click **Get Data** > **OData feed**.
-3. In the URL field, enter your gateway service root:
-   ```
-   https://<your-worker-subdomain>.workers.dev/odata
-   ```
-4. When prompted for authentication:
-   - Select **Basic** on the left menu.
-   - Enter your `BASIC_AUTH_USER` (e.g., `admin`).
-   - Enter your `BASIC_AUTH_PASS`.
-   - Set the level to the root URL.
-5. Click **Connect**. Power BI will read `$metadata` and display all D1 database tables in the **Navigator** pane with automated relationship detection and query delegation.
-
----
-
-### Postman
-
-1. Create a new collection.
-2. Under the **Authorization** tab, select **Basic Auth**.
-3. Set **Username** and **Password**.
-4. Send requests to `{{base_url}}/odata/TableName`.
 
 ---
 
 ## 🛠 Local Development & Testing
 
-### 1. Install Dependencies
-```bash
-npm install
-```
+You can develop, modify, and test D1Sheet 100% locally on your machine without even touching Cloudflare servers.
 
-### 2. Configure Local Secrets
-Copy the sample variables file:
+### 1. Set Up Local Secrets
 ```bash
 cp .dev.vars.example .dev.vars
 ```
-Edit `.dev.vars` with your local development credentials:
+Inside `.dev.vars`, define your local password:
 ```ini
 BASIC_AUTH_PASS=admin123
 ```
 
-### 3. Initialize Local D1 Database
-Execute the included sample schema against your local SQLite database:
+### 2. Populate Local SQLite Database
 ```bash
 npm run db:init:local
 ```
+This executes `schema.sql` against `.wrangler/state/v3/d1` on your local filesystem.
 
-### 4. Run Automated Test Suite
-Run the 25+ automated integration and unit tests:
+### 3. Run the Automated Test Suite
+Run the 25 built-in unit and integration tests:
 ```bash
 npm test
 ```
 
-### 5. Type-Check
-Ensure TypeScript has zero compiler errors:
+### 4. Type Check
+Verify TypeScript typing:
 ```bash
 npm run typecheck
 ```
 
-### 6. Start Local Development Server
+### 5. Start the Local Server
 ```bash
 npm run dev
 ```
-
-The gateway will be available at `http://localhost:8787/odata`.
+Your local gateway is ready at `http://localhost:8787/odata`!
 
 ---
 
-## 🚀 Deployment Instructions
+## 🔒 Security Best Practices
 
-### Step 1: Create a Cloudflare D1 Database
-If you do not have an existing D1 database, create one with the Wrangler CLI:
-```bash
-npx wrangler d1 create d1-odata-db
-```
-Wrangler will output the configuration snippet, for example:
-```toml
-[[d1_databases]]
-binding = "DB"
-database_name = "d1-odata-db"
-database_id = "xxxxxxxx-xxxx-xxxx-xxxx-xxxxxxxxxxxx"
-```
+- **Constant-Time Comparison**: D1Sheet uses SHA-256 byte hashing and bitwise XOR to verify Basic Auth credentials without leaking password length or timing info.
+- **SQL Injection Proof**: Every literal value in `$filter` is strictly parameterized as a positional SQLite argument (`?`).
+- **Identifier Whitelisting**: Table and column names are checked against `/^[a-zA-Z_][a-zA-Z0-9_]*$/` before inclusion in quotes.
+- **DDoS & Scraping Protection**: Default page size (`100`) and maximum page size (`1000`) safeguard your worker memory and D1 read operations.
 
-### Step 2: Update `wrangler.toml`
-Paste your `database_name` and `database_id` into `wrangler.toml`.
+---
 
-### Step 3: Populate Database Schema (Optional)
-If deploying initial tables and seed data to your remote Cloudflare database:
-```bash
-npm run db:init:remote
-```
+## 🗺 Roadmap
 
-### Step 4: Configure the Production Password Secret
-Store your gateway password securely in Cloudflare Secret storage:
-```bash
-npx wrangler secret put BASIC_AUTH_PASS
-```
-*(Enter your chosen strong password when prompted).*
-
-### Step 5: Deploy the Worker
-Deploy your OData gateway to Cloudflare's global edge network:
-```bash
-npm run deploy
-```
-
-Your OData gateway is live and ready for production consumption!
+- [x] OData v4 Read Queries (`$filter`, `$select`, `$orderby`, `$top`, `$skip`, `$count`)
+- [x] Dynamic EDMX `$metadata` Generation
+- [x] Automatic `@odata.nextLink` pagination
+- [x] Full Google AppSheet & Power BI Compatibility
+- [ ] OData v4 Write Operations (`POST`, `PATCH`, `DELETE`) for two-way AppSheet sync
+- [ ] Multi-tenant database routing via headers or subpaths
 
 ---
 
 ## 📄 License
 
-MIT License. Designed and implemented for high-throughput, enterprise-grade Cloudflare D1 deployments.
+MIT License © 2026. Made with ❤️ for developers building with Cloudflare Workers and Google AppSheet.

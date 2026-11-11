@@ -16,7 +16,7 @@ export async function basicAuthMiddleware(c: Context<{ Bindings: Env }>, next: N
   const authHeader = c.req.header('Authorization');
 
   if (!authHeader || !authHeader.startsWith('Basic ')) {
-    c.header('WWW-Authenticate', 'Basic realm="OData D1 Gateway", charset="UTF-8"');
+    c.header('WWW-Authenticate', 'Basic realm="D1Sheet Gateway", charset="UTF-8"');
     c.header('OData-Version', '4.0');
     return c.json(
       formatODataError('Unauthorized', 'Authentication is required to access this resource.'),
@@ -29,7 +29,7 @@ export async function basicAuthMiddleware(c: Context<{ Bindings: Env }>, next: N
   try {
     decoded = atob(base64Credentials);
   } catch {
-    c.header('WWW-Authenticate', 'Basic realm="OData D1 Gateway", charset="UTF-8"');
+    c.header('WWW-Authenticate', 'Basic realm="D1Sheet Gateway", charset="UTF-8"');
     c.header('OData-Version', '4.0');
     return c.json(
       formatODataError('Unauthorized', 'Invalid base64 encoding in Authorization header.'),
@@ -39,7 +39,7 @@ export async function basicAuthMiddleware(c: Context<{ Bindings: Env }>, next: N
 
   const colonIdx = decoded.indexOf(':');
   if (colonIdx === -1) {
-    c.header('WWW-Authenticate', 'Basic realm="OData D1 Gateway", charset="UTF-8"');
+    c.header('WWW-Authenticate', 'Basic realm="D1Sheet Gateway", charset="UTF-8"');
     c.header('OData-Version', '4.0');
     return c.json(
       formatODataError('Unauthorized', 'Malformed credentials format in Authorization header.'),
@@ -68,7 +68,7 @@ export async function basicAuthMiddleware(c: Context<{ Bindings: Env }>, next: N
   const isPassValid = await secureCompare(providedPass, expectedPass);
 
   if (!isUserValid || !isPassValid) {
-    c.header('WWW-Authenticate', 'Basic realm="OData D1 Gateway", charset="UTF-8"');
+    c.header('WWW-Authenticate', 'Basic realm="D1Sheet Gateway", charset="UTF-8"');
     c.header('OData-Version', '4.0');
     return c.json(
       formatODataError('Unauthorized', 'Invalid username or password.'),
