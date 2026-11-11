@@ -12,6 +12,7 @@
 [![License MIT](https://img.shields.io/badge/License-MIT-green.svg?style=flat-square)](LICENSE)
 
 <p align="center">
+  <a href="https://vieirafabiog.github.io/sheetverse/">🌐 Live Docs & Simulator</a> •
   <a href="#-why-d1sheet">Why D1Sheet?</a> •
   <a href="#-how-it-works">How It Works</a> •
   <a href="#-zero-to-live-in-5-minutes">5-Minute Deploy</a> •
@@ -95,8 +96,8 @@ Deploy your own live OData gateway to Cloudflare with 6 straightforward steps.
 
 ### Step 1: Clone and Install
 ```bash
-git clone https://github.com/your-username/d1sheet.git
-cd d1sheet
+git clone https://github.com/vieirafabiog/sheetverse.git
+cd sheetverse
 npm install
 ```
 

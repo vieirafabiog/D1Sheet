@@ -30,8 +30,10 @@
 
         <div class="nav-links">
           <a href="#why" data-i18n="nav_why">Why D1Sheet</a>
-          <a href="#simulator" data-i18n="nav_sim">Live Simulator</a>
-          <a href="#deploy" data-i18n="nav_deploy">5-Min Deploy</a>
+          <a href="#simulator" data-i18n="nav_sim">Simulator</a>
+          <a href="#config" data-i18n="nav_config">Config</a>
+          <a href="#deploy" data-i18n="nav_deploy">Deploy</a>
+          <a href="#api" data-i18n="nav_api">API Reference</a>
           <a href="#integrations" data-i18n="nav_connect">Integrations</a>
         </div>
 
@@ -41,7 +43,7 @@
             <button type="button" class="lang-btn" data-lang="pt">PT</button>
           </div>
           <a
-            href="https://github.com"
+            href="https://github.com/vieirafabiog/sheetverse"
             target="_blank"
             rel="noopener"
             class="btn btn-secondary btn-sm"
@@ -79,6 +81,15 @@
             </a>
             <a href="#simulator" class="btn btn-secondary" data-i18n="hero_cta_sim">
               Try Query Simulator
+            </a>
+            <a
+              href="https://github.com/vieirafabiog/sheetverse"
+              target="_blank"
+              rel="noopener"
+              class="btn btn-secondary"
+              data-i18n="hero_cta_repo"
+            >
+              View on GitHub
             </a>
           </div>
           <div class="hero-stats">
@@ -275,14 +286,14 @@
           <div class="sim-panes">
             <div class="sim-pane">
               <div class="pane-label">
-                <span>Generated D1 SQLite Query</span>
-                <span>100% Parameterized</span>
+                <span data-i18n="sim_pane_sql">Generated D1 SQLite Query</span>
+                <span data-i18n="sim_pane_sql_badge">100% Parameterized</span>
               </div>
               <pre id="simSql" class="sim-code"></pre>
             </div>
             <div class="sim-pane">
               <div class="pane-label">
-                <span>OData v4 Response Payload</span>
+                <span data-i18n="sim_pane_res">OData v4 Response Payload</span>
                 <span>OData-Version: 4.0</span>
               </div>
               <pre id="simResponse" class="sim-code"></pre>
@@ -292,56 +303,438 @@
       </div>
     </section>
 
-    <!-- 5-Min Deploy -->
+    <!-- Configuration Reference -->
+    <section id="config" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="cfg_tag">Configuration Reference</span>
+          <h2 data-i18n="cfg_title">Configure wrangler.toml & Secrets</h2>
+          <p data-i18n="cfg_desc">
+            Everything is controlled cleanly through wrangler.toml bindings, [vars], and encrypted
+            Cloudflare Secrets.
+          </p>
+        </div>
+
+        <div class="grid-2">
+          <div class="code-card">
+            <div class="code-card-header">
+              <span>wrangler.toml</span>
+              <button type="button" class="copy-btn" data-copy-target="wranglerConfigCode">
+                Copy
+              </button>
+            </div>
+            <pre id="wranglerConfigCode"><code>name = "d1sheet"
+main = "src/index.ts"
+compatibility_date = "2024-09-23"
+
+# Cloudflare D1 Database Binding
+[[d1_databases]]
+binding = "DB"
+database_name = "d1sheet-db"
+database_id = "YOUR_D1_DATABASE_ID"
+
+# Public environment variables
+[vars]
+ODATA_SERVICE_ROOT = "/odata"
+DEFAULT_PAGE_SIZE = "100"
+MAX_PAGE_SIZE = "1000"
+BASIC_AUTH_USER = "admin"</code></pre>
+          </div>
+
+          <div>
+            <div class="table-wrap">
+              <table class="ref-table">
+                <thead>
+                  <tr>
+                    <th data-i18n="cfg_th_var">Variable / Binding</th>
+                    <th data-i18n="cfg_th_desc">Purpose</th>
+                    <th data-i18n="cfg_th_def">Default</th>
+                  </tr>
+                </thead>
+                <tbody>
+                  <tr>
+                    <td><code>DB</code></td>
+                    <td data-i18n="cfg_db_desc">
+                      Cloudflare D1 database binding referenced in Worker code as env.DB
+                    </td>
+                    <td><code>DB</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>ODATA_SERVICE_ROOT</code></td>
+                    <td data-i18n="cfg_root_desc">Base URL route prefix for all OData endpoints</td>
+                    <td><code>/odata</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>DEFAULT_PAGE_SIZE</code></td>
+                    <td data-i18n="cfg_def_desc">Records per page when the client omits $top</td>
+                    <td><code>100</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>MAX_PAGE_SIZE</code></td>
+                    <td data-i18n="cfg_max_desc">
+                      Hard ceiling for $top to safeguard Worker memory and D1 reads
+                    </td>
+                    <td><code>1000</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>BASIC_AUTH_USER</code></td>
+                    <td data-i18n="cfg_user_desc">Username checked by the HTTP Basic Auth middleware</td>
+                    <td><code>admin</code></td>
+                  </tr>
+                  <tr>
+                    <td><code>BASIC_AUTH_PASS</code></td>
+                    <td data-i18n="cfg_pass_desc">
+                      Encrypted secret stored in Cloudflare (or .dev.vars locally)—never commit to Git!
+                    </td>
+                    <td><em>Secret</em></td>
+                  </tr>
+                </tbody>
+              </table>
+            </div>
+
+            <div class="callout callout-warn">
+              <span class="callout-icon">🔒</span>
+              <span data-i18n="cfg_sec_warn">
+                Security rule: Never put BASIC_AUTH_PASS in wrangler.toml. Always use npx wrangler
+                secret put BASIC_AUTH_PASS for production and .dev.vars locally.
+              </span>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Detailed Step-by-Step Deployment -->
     <section id="deploy" class="section">
       <div class="container">
         <div class="section-header">
-          <span class="section-tag" data-i18n="deploy_tag">Zero to Production</span>
-          <h2 data-i18n="deploy_title">Deploy in 5 Minutes</h2>
+          <span class="section-tag" data-i18n="deploy_tag">Zero to Live in 5 Minutes</span>
+          <h2 data-i18n="deploy_title">Step-by-Step Worker Deployment</h2>
           <p data-i18n="deploy_desc">
-            Six terminal commands to launch your serverless OData gateway on Cloudflare.
+            Follow these six commands from a clean terminal to launch your production OData gateway
+            on Cloudflare Edge.
+          </p>
+        </div>
+
+        <div class="prereq-bar">
+          <div class="prereq-pill">✅ <span data-i18n="prereq_node">Node.js 18+ installed</span></div>
+          <div class="prereq-pill">
+            ☁️
+            <a href="https://dash.cloudflare.com/sign-up" target="_blank" rel="noopener" data-i18n="prereq_cf">
+              Free Cloudflare Account
+            </a>
+          </div>
+          <div class="prereq-pill">📦 <span data-i18n="prereq_git">Git CLI</span></div>
+        </div>
+
+        <div class="deploy-steps-detailed">
+          <!-- Step 1 -->
+          <div class="deploy-step-card">
+            <div class="deploy-step-num">01</div>
+            <div class="deploy-step-body">
+              <h3 data-i18n="s1_t">Clone the Repository & Install Dependencies</h3>
+              <p data-i18n="s1_d">
+                Pull the D1Sheet source from GitHub and install Hono, TypeScript, and Wrangler CLI.
+              </p>
+              <div class="code-block-wrap">
+                <pre><code>git clone https://github.com/vieirafabiog/sheetverse.git
+cd sheetverse
+npm install</code></pre>
+                <button type="button" class="copy-btn">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 2 -->
+          <div class="deploy-step-card">
+            <div class="deploy-step-num">02</div>
+            <div class="deploy-step-body">
+              <h3 data-i18n="s2_t">Authenticate & Create Your Cloudflare D1 Database</h3>
+              <p data-i18n="s2_d">
+                Log into Cloudflare via Wrangler (once) and provision a new serverless SQLite
+                database. Wrangler will print a [[d1_databases]] block with your unique database_id.
+              </p>
+              <div class="code-block-wrap">
+                <pre><code>npx wrangler login
+npx wrangler d1 create d1sheet-db</code></pre>
+                <button type="button" class="copy-btn">Copy</button>
+              </div>
+              <div class="code-card" style="margin-top: 12px">
+                <div class="code-card-header"><span>Wrangler CLI Output Example</span></div>
+                <pre><code>[[d1_databases]]
+binding = "DB"
+database_name = "d1sheet-db"
+database_id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 3 -->
+          <div class="deploy-step-card">
+            <div class="deploy-step-num">03</div>
+            <div class="deploy-step-body">
+              <h3 data-i18n="s3_t">Bind the Database in wrangler.toml</h3>
+              <p data-i18n="s3_d">
+                Open wrangler.toml and paste the database_name and database_id generated in Step 2.
+                Adjust BASIC_AUTH_USER or page size limits if desired.
+              </p>
+              <div class="code-card">
+                <div class="code-card-header"><span>wrangler.toml</span></div>
+                <pre><code>[[d1_databases]]
+binding = "DB"
+database_name = "d1sheet-db"
+database_id = "a1b2c3d4-e5f6-7890-abcd-ef1234567890"</code></pre>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 4 -->
+          <div class="deploy-step-card">
+            <div class="deploy-step-num">04</div>
+            <div class="deploy-step-body">
+              <h3 data-i18n="s4_t">Create Tables & Seed Sample Data (Optional)</h3>
+              <p data-i18n="s4_d">
+                Use the included schema.sql (Customers, Products, Orders) to populate your remote D1
+                right away, or run your own SQL migration file.
+              </p>
+              <div class="code-block-wrap">
+                <pre><code>npm run db:init:remote
+# Or with your own schema file:
+# npx wrangler d1 execute DB --remote --file=your_schema.sql</code></pre>
+                <button type="button" class="copy-btn">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 5 -->
+          <div class="deploy-step-card">
+            <div class="deploy-step-num">05</div>
+            <div class="deploy-step-body">
+              <h3 data-i18n="s5_t">Set Your Encrypted Production Password</h3>
+              <p data-i18n="s5_d">
+                Store BASIC_AUTH_PASS inside Cloudflare encrypted Secrets. Wrangler will prompt you
+                securely in the terminal.
+              </p>
+              <div class="code-block-wrap">
+                <code>npx wrangler secret put BASIC_AUTH_PASS</code>
+                <button type="button" class="copy-btn">Copy</button>
+              </div>
+            </div>
+          </div>
+
+          <!-- Step 6 -->
+          <div class="deploy-step-card">
+            <div class="deploy-step-num">06</div>
+            <div class="deploy-step-body">
+              <h3 data-i18n="s6_t">Deploy to Cloudflare Workers & Verify!</h3>
+              <p data-i18n="s6_d">
+                Publish your gateway globally in seconds. Wrangler outputs your live URL—test it
+                immediately with cURL or Power BI!
+              </p>
+              <div class="code-block-wrap">
+                <pre><code>npm run deploy
+# Live Service Root: https://d1sheet.&lt;your-subdomain&gt;.workers.dev/odata</code></pre>
+                <button type="button" class="copy-btn">Copy</button>
+              </div>
+            </div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- API Reference & Query Options Matrix -->
+    <section id="api" class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="api_tag">Protocol Specification</span>
+          <h2 data-i18n="api_title">Endpoints, Query Options & Type Mapping</h2>
+          <p data-i18n="api_desc">
+            Full OData v4 read/write capabilities paired with automatic SQLite schema reflection.
+          </p>
+        </div>
+
+        <!-- Endpoints Table -->
+        <div class="table-wrap" style="margin-bottom: 28px">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th data-i18n="api_ep_th_method">Method</th>
+                <th data-i18n="api_ep_th_path">Endpoint</th>
+                <th data-i18n="api_ep_th_desc">Behavior</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><span class="method-badge">GET</span></td>
+                <td><code>/odata</code></td>
+                <td data-i18n="ep_1">
+                  OData Service Document listing all D1 tables for Power BI & AppSheet auto-discovery
+                </td>
+              </tr>
+              <tr>
+                <td><span class="method-badge">GET</span></td>
+                <td><code>/odata/$metadata</code></td>
+                <td data-i18n="ep_2">
+                  Dynamic EDMX XML schema inspected live via sqlite_master & PRAGMA table_info
+                </td>
+              </tr>
+              <tr>
+                <td><span class="method-badge">GET</span></td>
+                <td><code>/odata/{TableName}</code></td>
+                <td data-i18n="ep_3">
+                  Query entity collection with $filter, $select, $orderby, $top, $skip, $count & @odata.nextLink
+                </td>
+              </tr>
+              <tr>
+                <td><span class="method-badge">GET</span></td>
+                <td><code>/odata/{Table}({id})</code></td>
+                <td data-i18n="ep_4">
+                  Fetch single entity by primary key (supports Table(1), Table(Id=1), or Table/1)
+                </td>
+              </tr>
+              <tr>
+                <td><span class="method-badge">GET</span></td>
+                <td><code>/odata/{Table}/$count</code></td>
+                <td data-i18n="ep_5">Return plain-text integer record count matching optional $filter</td>
+              </tr>
+              <tr>
+                <td><span class="method-badge POST">POST</span></td>
+                <td><code>/odata/{TableName}</code></td>
+                <td data-i18n="ep_6">
+                  Insert new row using SQLite RETURNING * and return 201 Created + Location header
+                </td>
+              </tr>
+              <tr>
+                <td><span class="method-badge PATCH">PATCH / PUT</span></td>
+                <td><code>/odata/{Table}({id})</code></td>
+                <td data-i18n="ep_7">
+                  Partial or full update of existing row returning 200 OK + updated entity
+                </td>
+              </tr>
+              <tr>
+                <td><span class="method-badge DELETE">DELETE</span></td>
+                <td><code>/odata/{Table}({id})</code></td>
+                <td data-i18n="ep_8">Delete record by primary key and return 204 No Content</td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+
+        <!-- Query Matrix -->
+        <div class="table-wrap">
+          <table class="ref-table">
+            <thead>
+              <tr>
+                <th data-i18n="api_q_th_param">OData Query Option</th>
+                <th data-i18n="api_q_th_ex">Example</th>
+                <th data-i18n="api_q_th_sql">SQLite Translation</th>
+              </tr>
+            </thead>
+            <tbody>
+              <tr>
+                <td><strong><code>$select</code></strong></td>
+                <td><code>?$select=Id,Name,Balance</code></td>
+                <td><code>SELECT "Id", "Name", "Balance" FROM ...</code></td>
+              </tr>
+              <tr>
+                <td><strong><code>$filter</code></strong> (<span data-i18n="q_rel">Relational</span>)</td>
+                <td><code>?$filter=Balance ge 1000 and IsVip eq true</code></td>
+                <td><code>WHERE ("Balance" &gt;= ? AND "IsVip" = ?)</code></td>
+              </tr>
+              <tr>
+                <td><strong><code>$filter</code></strong> (<span data-i18n="q_str">Contains</span>)</td>
+                <td><code>?$filter=contains(Email, '@corp.com')</code></td>
+                <td><code>WHERE (INSTR("Email", ?) &gt; 0)</code></td>
+              </tr>
+              <tr>
+                <td><strong><code>$filter</code></strong> (<span data-i18n="q_pre">Prefix/Suffix</span>)</td>
+                <td><code>?$filter=startswith(Name, 'Dr.')</code></td>
+                <td><code>WHERE (INSTR("Name", ?) = 1)</code> / <code>LIKE ('%' || ?)</code></td>
+              </tr>
+              <tr>
+                <td><strong><code>$filter</code></strong> (<span data-i18n="q_null">Nulls</span>)</td>
+                <td><code>?$filter=Email ne null and City eq null</code></td>
+                <td><code>WHERE ("Email" IS NOT NULL AND "City" IS NULL)</code></td>
+              </tr>
+              <tr>
+                <td><strong><code>$filter</code></strong> (<span data-i18n="q_case">Functions</span>)</td>
+                <td><code>?$filter=tolower(City) eq 'london'</code></td>
+                <td><code>LOWER("City")</code>, <code>UPPER(...)</code>, <code>LENGTH(...)</code></td>
+              </tr>
+              <tr>
+                <td><strong><code>$orderby</code></strong></td>
+                <td><code>?$orderby=Balance desc, Name asc</code></td>
+                <td><code>ORDER BY "Balance" DESC, "Name" ASC</code></td>
+              </tr>
+              <tr>
+                <td><strong><code>$top</code> &amp; <code>$skip</code></strong></td>
+                <td><code>?$top=20&amp;$skip=40</code></td>
+                <td><code>LIMIT ? OFFSET ?</code> (with <code>@odata.nextLink</code>)</td>
+              </tr>
+              <tr>
+                <td><strong><code>$count</code></strong></td>
+                <td><code>?$count=true</code></td>
+                <td><code>SELECT COUNT(*) AS count ...</code> &rarr; <code>"@odata.count"</code></td>
+              </tr>
+            </tbody>
+          </table>
+        </div>
+      </div>
+    </section>
+
+    <!-- Local Development & Testing -->
+    <section class="section">
+      <div class="container">
+        <div class="section-header">
+          <span class="section-tag" data-i18n="local_tag">Develop & Test Offline</span>
+          <h2 data-i18n="local_title">Local Development Workflow</h2>
+          <p data-i18n="local_desc">
+            Run the full Worker + local SQLite D1 emulator and all 33 automated tests right on your
+            machine.
           </p>
         </div>
 
         <div class="deploy-grid">
           <div class="card">
-            <h3 data-i18n="dep_1_t">1. Clone & Install</h3>
-            <p data-i18n="dep_1_d">Download the repository and install Worker dependencies.</p>
+            <h3 data-i18n="local_1_t">1. Configure .dev.vars</h3>
+            <p data-i18n="local_1_d">
+              Create .dev.vars from the example file for your local Basic Auth password.
+            </p>
             <div class="code-block-wrap">
-              <code>npm install</code>
+              <code>cp .dev.vars.example .dev.vars</code>
               <button type="button" class="copy-btn">Copy</button>
             </div>
           </div>
 
           <div class="card">
-            <h3 data-i18n="dep_2_t">2. Create D1 Database</h3>
-            <p data-i18n="dep_2_d">
-              Provision your serverless SQLite instance and paste the database_id into wrangler.toml.
+            <h3 data-i18n="local_2_t">2. Seed Local D1 SQLite</h3>
+            <p data-i18n="local_2_d">
+              Initialize .wrangler/state/v3/d1 locally using schema.sql.
             </p>
             <div class="code-block-wrap">
-              <code>npx wrangler d1 create d1sheet-db</code>
+              <code>npm run db:init:local</code>
               <button type="button" class="copy-btn">Copy</button>
             </div>
           </div>
 
           <div class="card">
-            <h3 data-i18n="dep_3_t">3. Initialize Tables</h3>
-            <p data-i18n="dep_3_d">
-              Push the sample Customers, Products, and Orders schema to your remote D1.
+            <h3 data-i18n="local_3_t">3. Run Automated Tests (33/33)</h3>
+            <p data-i18n="local_3_d">
+              Execute auth, SQL translator, CRUD, and metadata integration tests.
             </p>
             <div class="code-block-wrap">
-              <code>npm run db:init:remote</code>
+              <code>npm test && npm run typecheck</code>
               <button type="button" class="copy-btn">Copy</button>
             </div>
           </div>
 
           <div class="card">
-            <h3 data-i18n="dep_4_t">4. Set Secret & Deploy</h3>
-            <p data-i18n="dep_4_d">
-              Store your Basic Auth password as an encrypted Cloudflare Secret and publish.
+            <h3 data-i18n="local_4_t">4. Start Local Dev Server</h3>
+            <p data-i18n="local_4_d">
+              Launch Wrangler local gateway at http://localhost:8787/odata.
             </p>
             <div class="code-block-wrap">
-              <code>npx wrangler secret put BASIC_AUTH_PASS && npm run deploy</code>
+              <code>npm run dev</code>
               <button type="button" class="copy-btn">Copy</button>
             </div>
           </div>
@@ -369,34 +762,44 @@
 
         <!-- AppSheet Tab -->
         <div id="tab-appsheet" class="tab-panel active">
-          <div class="steps-list">
-            <div class="step-row">
-              <div class="step-circle">1</div>
-              <div>
-                <h4>Open Sources in AppSheet</h4>
-                <p>Go to <strong>My Account → Sources → + New Data Source</strong> and select <strong>OData</strong>.</p>
+          <div>
+            <div class="steps-list">
+              <div class="step-row">
+                <div class="step-circle">1</div>
+                <div>
+                  <h4>Open Sources in AppSheet</h4>
+                  <p>Go to <strong>My Account → Sources → + New Data Source</strong> and select <strong>OData</strong>.</p>
+                </div>
+              </div>
+              <div class="step-row">
+                <div class="step-circle">2</div>
+                <div>
+                  <h4>Enter Your Worker Root URL</h4>
+                  <p>Set OData Version to <strong>4.0</strong> and paste <code>https://d1sheet.&lt;subdomain&gt;.workers.dev/odata</code>.</p>
+                </div>
+              </div>
+              <div class="step-row">
+                <div class="step-circle">3</div>
+                <div>
+                  <h4>Basic Authentication</h4>
+                  <p>Use your <code>BASIC_AUTH_USER</code> (e.g. <code>admin</code>) and <code>BASIC_AUTH_PASS</code> secret.</p>
+                </div>
+              </div>
+              <div class="step-row">
+                <div class="step-circle">4</div>
+                <div>
+                  <h4>Full Bidirectional Sync</h4>
+                  <p>AppSheet automatically discovers tables, Primary Keys, types, and uses POST / PATCH / DELETE.</p>
+                </div>
               </div>
             </div>
-            <div class="step-row">
-              <div class="step-circle">2</div>
-              <div>
-                <h4>Enter Your Worker Root URL</h4>
-                <p>Set OData Version to <strong>4.0</strong> and paste <code>https://d1sheet.&lt;subdomain&gt;.workers.dev/odata</code>.</p>
-              </div>
-            </div>
-            <div class="step-row">
-              <div class="step-circle">3</div>
-              <div>
-                <h4>Basic Authentication</h4>
-                <p>Use your <code>BASIC_AUTH_USER</code> (e.g. <code>admin</code>) and <code>BASIC_AUTH_PASS</code> secret.</p>
-              </div>
-            </div>
-            <div class="step-row">
-              <div class="step-circle">4</div>
-              <div>
-                <h4>Full Bidirectional Sync</h4>
-                <p>AppSheet automatically discovers tables, Primary Keys, types, and uses POST / PATCH / DELETE.</p>
-              </div>
+
+            <div class="callout callout-tip">
+              <span class="callout-icon">💡</span>
+              <span data-i18n="appsheet_tip">
+                AppSheet Modeling Pro-Tips: Ensure every D1 table has an explicit Primary Key (e.g.
+                Id INTEGER PRIMARY KEY AUTOINCREMENT or TEXT UUID) and avoid spaces in column names.
+              </span>
             </div>
           </div>
 
@@ -502,8 +905,10 @@ curl -X POST -u admin:secret \
         <div class="footer-links">
           <a href="#why">Architecture</a>
           <a href="#simulator">Simulator</a>
+          <a href="#config">Config</a>
           <a href="#deploy">Deploy</a>
-          <a href="#integrations">Integrations</a>
+          <a href="#api">API</a>
+          <a href="https://github.com/vieirafabiog/sheetverse" target="_blank" rel="noopener">GitHub Repo</a>
         </div>
       </div>
     </footer>
