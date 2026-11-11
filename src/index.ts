@@ -3,6 +3,7 @@ import { cors } from 'hono/cors';
 import type { Env } from './types';
 import { basicAuthMiddleware } from './middleware/auth';
 import { formatODataError, ODataHttpError } from './utils/odataError';
+import { odataRoutes } from './routes/odataRoutes';
 
 const app = new Hono<{ Bindings: Env }>();
 
@@ -89,6 +90,9 @@ app.get('/', (c) => {
     },
   });
 });
+
+// Mount OData routes
+app.route('/odata', odataRoutes);
 
 export default app;
 

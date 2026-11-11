@@ -73,3 +73,4 @@ export interface GeneratedSqlQuery {
   hasCustomLimit: boolean;
   selectedColumns: string[];
 }
+

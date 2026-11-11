@@ -256,3 +256,4 @@ export class ODataParser {
     throw new ODataHttpError(400, 'InvalidQuery', `${message} Got '${token.value || 'EOF'}' at position ${token.position}.`);
   }
 }
+
