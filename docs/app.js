@@ -8,14 +8,12 @@ const I18N = {
     nav_api: 'API Reference',
     nav_connect: 'Integrations',
 
-    hero_badge: 'OData v4 • Cloudflare Workers + D1',
-    hero_title_1: 'Turn Cloudflare D1 into an ',
-    hero_title_2: 'instant OData API.',
+    hero_badge: 'D1 · OData v4 Gateway',
+    hero_title: 'The easiest way to expose D1 via OData',
     hero_desc:
       'Bridge Google AppSheet, Power BI, Excel, and enterprise tools directly to Cloudflare D1 SQLite databases—with zero servers, sub-10ms edge latency, and full read/write CRUD.',
     hero_cta_deploy: 'Deploy in 5 Minutes',
-    hero_cta_sim: 'Try Query Simulator',
-    hero_cta_repo: 'View on GitHub',
+    hero_cta_sim: 'View Simulator',
     stat_1_val: '5M / day',
     stat_1_lbl: 'Free D1 Reads',
     stat_2_val: '0 Servers',
@@ -47,25 +45,42 @@ const I18N = {
     card_d1_3: '100% parameterized SQL & dynamic $metadata',
 
     pipe_tag: 'Under The Hood',
-    pipe_title: 'Every Request in 4 Edge Steps',
-    pipe_1_t: 'Timing-Safe Auth',
-    pipe_1_d: 'Validates Basic Auth headers via SHA-256 constant-time XOR comparison.',
+    pipe_title: 'Built for Edge-Native OData',
+    pipe_1_t: 'Timing-Safe Authentication',
+    pipe_1_d:
+      'Validates HTTP Basic Auth headers via SHA-256 constant-time XOR comparison, preventing credential length and timing side-channel leaks.',
     pipe_2_t: 'AST Query Parser',
-    pipe_2_d: 'Tokenizes $filter, $select, and $orderby into a strict syntax tree.',
-    pipe_3_t: 'Parameterized SQL',
-    pipe_3_d: 'Compiles queries using bound ? parameters—immune to SQL injection.',
-    pipe_4_t: 'D1 + OData Envelope',
-    pipe_4_d: 'Executes on D1 SQLite and returns OData v4 JSON with @odata.nextLink.',
+    pipe_2_d:
+      'Tokenizes $filter, $select, and $orderby into a strict Abstract Syntax Tree, validating table and column names against safe alphanumeric rules.',
+    pipe_3_t: 'Parameterized SQL Compiler',
+    pipe_3_d:
+      'Compiles every literal value into bound ? SQLite parameters—100% immune to SQL injection attacks.',
+    pipe_4_t: 'D1 Execution & OData Envelope',
+    pipe_4_d:
+      'Executes directly on Cloudflare D1 via Worker bindings and formats standard OData v4 JSON with @odata.context and @odata.nextLink.',
 
-    sim_tag: 'Interactive Sandbox',
-    sim_title: 'OData → SQLite Translator Simulator',
+    sim_tag: 'From query to SQLite',
+    sim_title: 'OData to SQLite Translator',
     sim_desc:
-      'Select a preset or tweak query parameters to inspect how D1Sheet compiles OData requests into parameterized SQLite queries.',
-    sim_pane_sql: 'Generated D1 SQLite Query',
-    sim_pane_sql_badge: '100% Parameterized',
-    sim_pane_res: 'OData v4 Response Payload',
+      'Select a preset or edit the OData query path to inspect how D1Sheet compiles requests into parameterized D1 queries.',
+    sim_view_both: 'combined.log',
+    sim_view_sql: 'query.sql',
+    sim_view_res: 'response.json',
 
-    cfg_tag: 'Configuration Reference',
+    pre_filter_t: 'Filter & Sort',
+    pre_filter_s: 'Translate $filter, $orderby, and $top into bound SQLite queries.',
+    pre_select_t: 'Projection & contains()',
+    pre_select_s: 'Restrict columns with $select and search substrings safely.',
+    pre_meta_t: 'Dynamic $metadata',
+    pre_meta_s: 'Reflect SQLite PRAGMA table_info into valid OData v4 EDMX XML.',
+    pre_post_t: 'Insert Record (POST)',
+    pre_post_s: 'Insert rows with native SQLite RETURNING * and 201 Created.',
+    pre_patch_t: 'Update Entity (PATCH)',
+    pre_patch_s: 'Support both Customers(1) and named keys like Customers(Id=1).',
+    pre_del_t: 'Delete Entity (DELETE)',
+    pre_del_s: 'Verify existence and remove records with 204 No Content.',
+
+    cfg_tag: 'CONFIG',
     cfg_title: 'Configure wrangler.toml & Secrets',
     cfg_desc:
       'Everything is controlled cleanly through wrangler.toml bindings, [vars], and encrypted Cloudflare Secrets.',
@@ -77,7 +92,8 @@ const I18N = {
     cfg_def_desc: 'Records per page when the client omits $top',
     cfg_max_desc: 'Hard ceiling for $top to safeguard Worker memory and D1 reads',
     cfg_user_desc: 'Username checked by the HTTP Basic Auth middleware',
-    cfg_pass_desc: 'Encrypted secret stored in Cloudflare (or .dev.vars locally)—never commit to Git!',
+    cfg_pass_desc:
+      'Encrypted secret stored in Cloudflare (or .dev.vars locally)—never commit to Git.',
     cfg_sec_warn:
       'Security rule: Never put BASIC_AUTH_PASS in wrangler.toml. Always use npx wrangler secret put BASIC_AUTH_PASS for production and .dev.vars locally.',
 
@@ -99,11 +115,11 @@ const I18N = {
     s4_d: 'Use the included schema.sql (Customers, Products, Orders) to populate your remote D1 right away, or run your own SQL migration file.',
     s5_t: 'Set Your Encrypted Production Password',
     s5_d: 'Store BASIC_AUTH_PASS inside Cloudflare encrypted Secrets. Wrangler will prompt you securely in the terminal.',
-    s6_t: 'Deploy to Cloudflare Workers & Verify!',
-    s6_d: 'Publish your gateway globally in seconds. Wrangler outputs your live URL—test it immediately with cURL or Power BI!',
+    s6_t: 'Deploy to Cloudflare Workers & Verify',
+    s6_d: 'Publish your gateway globally in seconds. Wrangler outputs your live URL—test it immediately with cURL or Power BI.',
 
     api_tag: 'Protocol Specification',
-    api_title: 'Endpoints, Query Options & Type Mapping',
+    api_title: 'Endpoints & Query Options',
     api_desc:
       'Full OData v4 read/write capabilities paired with automatic SQLite schema reflection.',
     api_ep_th_method: 'Method',
@@ -156,14 +172,12 @@ const I18N = {
     nav_api: 'API & Queries',
     nav_connect: 'Integrações',
 
-    hero_badge: 'OData v4 • Cloudflare Workers + D1',
-    hero_title_1: 'Transforme o Cloudflare D1 em uma ',
-    hero_title_2: 'API OData instantânea.',
+    hero_badge: 'D1 · Gateway OData v4',
+    hero_title: 'O jeito mais simples de expor D1 via OData',
     hero_desc:
       'Conecte Google AppSheet, Power BI, Excel e sistemas corporativos direto ao Cloudflare D1 — sem servidores, com latência na borda e CRUD completo.',
-    hero_cta_deploy: 'Fazer Deploy em 5 Min',
-    hero_cta_sim: 'Testar Simulador',
-    hero_cta_repo: 'Ver no GitHub',
+    hero_cta_deploy: 'Deploy em 5 Minutos',
+    hero_cta_sim: 'Ver Simulador',
     stat_1_val: '5M / dia',
     stat_1_lbl: 'Leituras Grátis no D1',
     stat_2_val: '0 Servidores',
@@ -172,9 +186,9 @@ const I18N = {
     stat_3_lbl: 'GET, POST, PATCH, DELETE',
 
     why_tag: 'O Elo Perdido',
-    why_title: 'O que o D1Sheet resolve?',
+    why_title: 'Por que usar o D1Sheet?',
     why_desc:
-      'O melhor banco SQL serverless na borda conectado às principais ferramentas No-Code e BI sem pagar por servidores ociosos.',
+      'SQL serverless na borda aliado à conectividade corporativa sem manter servidores ou pagar por instâncias ociosas.',
     card_sheets_title: 'Planilhas (Sheets)',
     card_sheets_desc:
       'Ótimas para protótipos, mas o Google Sheets fica lento após poucas milhares de linhas e não garante integridade relacional.',
@@ -195,28 +209,45 @@ const I18N = {
     card_d1_3: 'SQL 100% parametrizado e $metadata dinâmico',
 
     pipe_tag: 'Por Dentro do Motor',
-    pipe_title: 'Cada Requisição em 4 Passos',
-    pipe_1_t: 'Auth em Tempo Constante',
-    pipe_1_d: 'Valida Basic Auth usando hash SHA-256 + XOR contra timing attacks.',
-    pipe_2_t: 'Parser AST OData',
-    pipe_2_d: 'Tokeniza $filter, $select e $orderby em uma árvore sintática estrita.',
-    pipe_3_t: 'SQL Parametrizado',
-    pipe_3_d: 'Compila queries com marcadores ? seguros — imune a SQL Injection.',
-    pipe_4_t: 'D1 + Envelope OData',
-    pipe_4_d: 'Executa no D1 e retorna JSON OData v4 com @odata.nextLink.',
+    pipe_title: 'Construído para OData na Borda',
+    pipe_1_t: 'Autenticação em Tempo Constante',
+    pipe_1_d:
+      'Valida cabeçalhos HTTP Basic Auth usando hash SHA-256 + comparação XOR em tempo constante contra timing attacks.',
+    pipe_2_t: 'Parser AST de Consultas',
+    pipe_2_d:
+      'Tokeniza $filter, $select e $orderby em uma árvore sintática estrita, validando identificadores contra caracteres inseguros.',
+    pipe_3_t: 'Compilador SQL Parametrizado',
+    pipe_3_d:
+      'Converte todos os literais em parâmetros ? do SQLite — 100% imune a SQL Injection.',
+    pipe_4_t: 'Execução D1 & Envelope OData',
+    pipe_4_d:
+      'Executa direto no Cloudflare D1 via Worker binding e formata JSON OData v4 padrão com @odata.context e @odata.nextLink.',
 
-    sim_tag: 'Sandbox Interativo',
-    sim_title: 'Simulador OData → SQLite D1',
+    sim_tag: 'Da query ao SQLite',
+    sim_title: 'Tradutor OData para SQLite',
     sim_desc:
-      'Escolha um cenário ou edite a URL para ver como o D1Sheet traduz consultas OData em SQL SQLite parametrizado e seguro.',
-    sim_pane_sql: 'Query SQLite D1 Gerada',
-    sim_pane_sql_badge: '100% Parametrizado',
-    sim_pane_res: 'Payload de Resposta OData v4',
+      'Escolha um cenário ou edite a URL OData para inspecionar como o D1Sheet compila requisições em queries SQLite parametrizadas.',
+    sim_view_both: 'combinado.log',
+    sim_view_sql: 'query.sql',
+    sim_view_res: 'resposta.json',
 
-    cfg_tag: 'Guia de Configuração',
+    pre_filter_t: 'Filtrar e Ordenar',
+    pre_filter_s: 'Traduz $filter, $orderby e $top para SQLite parametrizado.',
+    pre_select_t: 'Projeção & contains()',
+    pre_select_s: 'Restringe colunas com $select e busca substrings com segurança.',
+    pre_meta_t: '$metadata Dinâmico',
+    pre_meta_s: 'Reflete PRAGMA table_info do SQLite em XML EDMX v4 válido.',
+    pre_post_t: 'Inserir Registro (POST)',
+    pre_post_s: 'Insere linhas usando RETURNING * nativo e status 201 Created.',
+    pre_patch_t: 'Atualizar Entidade (PATCH)',
+    pre_patch_s: 'Suporta tanto Customers(1) quanto chaves nomeadas Customers(Id=1).',
+    pre_del_t: 'Remover Entidade (DELETE)',
+    pre_del_s: 'Verifica existência e remove registros retornando 204 No Content.',
+
+    cfg_tag: 'CONFIG',
     cfg_title: 'Configurando wrangler.toml e Secrets',
     cfg_desc:
-      'Tudo é configurado de forma simples pelos bindings do wrangler.toml, variáveis [vars] e Secrets criptografadas da Cloudflare.',
+      'Tudo é configurado de forma limpa pelos bindings do wrangler.toml, variáveis [vars] e Secrets criptografadas da Cloudflare.',
     cfg_th_var: 'Variável / Binding',
     cfg_th_desc: 'Finalidade',
     cfg_th_def: 'Padrão',
@@ -225,7 +256,8 @@ const I18N = {
     cfg_def_desc: 'Quantidade padrão de registros por página quando $top é omitido',
     cfg_max_desc: 'Limite máximo permitido para $top (proteção contra uso excessivo)',
     cfg_user_desc: 'Usuário esperado pela autenticação HTTP Basic Auth',
-    cfg_pass_desc: 'Senha armazenada como Secret criptografada na Cloudflare (ou .dev.vars local) — nunca suba no Git!',
+    cfg_pass_desc:
+      'Senha armazenada como Secret criptografada na Cloudflare (ou .dev.vars local) — nunca suba no Git.',
     cfg_sec_warn:
       'Regra de Segurança: Nunca escreva BASIC_AUTH_PASS em texto claro no wrangler.toml. Use sempre npx wrangler secret put BASIC_AUTH_PASS em produção e .dev.vars localmente.',
 
@@ -247,11 +279,11 @@ const I18N = {
     s4_d: 'Execute o schema.sql incluso (tabelas Customers, Products e Orders) no seu D1 remoto, ou rode o seu próprio arquivo .sql de criação de tabelas.',
     s5_t: 'Definir a Senha Criptografada de Produção',
     s5_d: 'Salve a variável BASIC_AUTH_PASS usando o gerenciador seguro de Secrets da Cloudflare. O terminal pedirá para digitar a senha de forma oculta.',
-    s6_t: 'Publicar o Worker & Testar ao Vivo!',
-    s6_d: 'Publique seu gateway globalmente em segundos. O Wrangler exibirá a sua URL live — teste imediatamente via cURL, Power BI ou AppSheet!',
+    s6_t: 'Publicar o Worker & Verificar',
+    s6_d: 'Publique seu gateway globalmente em segundos. O Wrangler exibirá a sua URL live — teste imediatamente via cURL, Power BI ou AppSheet.',
 
     api_tag: 'Especificação do Protocolo',
-    api_title: 'Endpoints, Parâmetros OData & Tipagem',
+    api_title: 'Endpoints & Opções de Query',
     api_desc:
       'Suporte completo a leitura e gravação OData v4 com introspecção dinâmica do esquema SQLite.',
     api_ep_th_method: 'Método',
@@ -299,20 +331,9 @@ const I18N = {
 };
 
 let currentLang = 'en';
-
-function applyLanguage(lang) {
-  currentLang = lang;
-  const dict = I18N[lang];
-  document.querySelectorAll('[data-i18n]').forEach((el) => {
-    const key = el.getAttribute('data-i18n');
-    if (dict[key]) {
-      el.textContent = dict[key];
-    }
-  });
-  document.querySelectorAll('.lang-btn').forEach((btn) => {
-    btn.classList.toggle('active', btn.dataset.lang === lang);
-  });
-}
+let currentPreset = 'filter';
+let currentView = 'both';
+let customSqlOverride = null;
 
 // Simulator Presets
 const PRESETS = {
@@ -463,24 +484,64 @@ OData-Version: 4.0`,
   },
 };
 
-function renderPreset(key) {
-  const preset = PRESETS[key];
+function escapeHtml(str) {
+  return str
+    .replace(/&/g, '&amp;')
+    .replace(/</g, '&lt;')
+    .replace(/>/g, '&gt;');
+}
+
+function renderNumberedCode(text) {
+  const container = document.getElementById('simCodeOutput');
+  if (!container) return;
+
+  const lines = text.split('\n');
+  container.innerHTML = lines
+    .map((line, index) => {
+      const num = String(index + 1).padStart(2, '0');
+      const safeLine = escapeHtml(line) || ' ';
+      return `<div class="code-line"><span class="line-num">${num}</span><span class="line-text">${safeLine}</span></div>`;
+    })
+    .join('');
+}
+
+function renderSimulator() {
+  const preset = PRESETS[currentPreset];
   if (!preset) return;
 
   const badge = document.getElementById('simMethod');
   badge.textContent = preset.method;
   badge.className = `method-badge ${preset.method}`;
 
-  document.getElementById('simUrl').value = preset.url;
-  document.getElementById('simSql').textContent = preset.sql;
-  document.getElementById('simResponse').textContent = preset.response;
+  const sqlText = customSqlOverride !== null ? customSqlOverride : preset.sql;
+  let outputText = '';
+
+  if (currentView === 'sql') {
+    outputText = sqlText;
+  } else if (currentView === 'res') {
+    outputText = preset.response;
+  } else {
+    outputText = `${sqlText}\n\n// --- OData v4 Response ---\n${preset.response}`;
+  }
+
+  renderNumberedCode(outputText);
+}
+
+function selectPreset(key) {
+  currentPreset = key;
+  customSqlOverride = null;
+  const preset = PRESETS[key];
+  if (preset) {
+    document.getElementById('simUrl').value = preset.url;
+  }
 
   document.querySelectorAll('.preset-btn').forEach((btn) => {
     btn.classList.toggle('active', btn.dataset.preset === key);
   });
+
+  renderSimulator();
 }
 
-// Live URL Parser fallback when user edits the URL input manually
 function handleCustomUrlInput(val) {
   try {
     const clean = val.trim();
@@ -502,7 +563,7 @@ function handleCustomUrlInput(val) {
     const filter = params.get('$filter');
     const order = params.get('$orderby');
 
-    let sql = `SELECT ${cols} FROM "${table}"`;
+    let sql = `-- Custom Live Query Translation\nSELECT ${cols} FROM "${table}"`;
     if (filter) {
       sql += `\nWHERE (${filter
         .replace(/\beq\b/gi, '=')
@@ -515,11 +576,26 @@ function handleCustomUrlInput(val) {
     if (order) {
       sql += `\nORDER BY ${order.toUpperCase()}`;
     }
-    sql += `\nLIMIT ? OFFSET ?\n\n-- Bound Params\n[ ..., ${limit}, ${offset} ]`;
-    document.getElementById('simSql').textContent = sql;
+    sql += `\nLIMIT ? OFFSET ?\n\n-- Bound Parameters\n[ ..., ${limit}, ${offset} ]`;
+    customSqlOverride = sql;
+    renderSimulator();
   } catch {
     // ignore partial typing
   }
+}
+
+function applyLanguage(lang) {
+  currentLang = lang;
+  const dict = I18N[lang];
+  document.querySelectorAll('[data-i18n]').forEach((el) => {
+    const key = el.getAttribute('data-i18n');
+    if (dict[key]) {
+      el.textContent = dict[key];
+    }
+  });
+  document.querySelectorAll('.lang-btn').forEach((btn) => {
+    btn.classList.toggle('active', btn.dataset.lang === lang);
+  });
 }
 
 document.addEventListener('DOMContentLoaded', () => {
@@ -530,7 +606,18 @@ document.addEventListener('DOMContentLoaded', () => {
 
   // Preset buttons
   document.querySelectorAll('.preset-btn').forEach((btn) => {
-    btn.addEventListener('click', () => renderPreset(btn.dataset.preset));
+    btn.addEventListener('click', () => selectPreset(btn.dataset.preset));
+  });
+
+  // View tabs in Simulator (combined / sql / response)
+  document.querySelectorAll('.sim-tab-view').forEach((btn) => {
+    btn.addEventListener('click', () => {
+      currentView = btn.dataset.view;
+      document.querySelectorAll('.sim-tab-view').forEach((b) => {
+        b.classList.toggle('active', b === btn);
+      });
+      renderSimulator();
+    });
   });
 
   // Custom URL edit
@@ -550,17 +637,20 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  // Copy buttons (supports both inline code-block-wrap and code-card)
+  // Copy buttons
   document.querySelectorAll('.copy-btn').forEach((btn) => {
     btn.addEventListener('click', async () => {
       const targetId = btn.dataset.copyTarget;
       let textToCopy = '';
 
-      if (targetId) {
+      if (targetId === 'simCodeOutput') {
+        const lines = Array.from(document.querySelectorAll('#simCodeOutput .line-text'));
+        textToCopy = lines.map((l) => l.textContent).join('\n');
+      } else if (targetId) {
         const el = document.getElementById(targetId);
         if (el) textToCopy = el.textContent.trim();
       } else {
-        const container = btn.closest('.code-block-wrap, .code-card');
+        const container = btn.closest('.code-block-wrap, .code-card, .bento-code-area');
         const codeEl = container ? container.querySelector('code, pre') : null;
         if (codeEl) textToCopy = codeEl.textContent.trim();
       }
@@ -582,5 +672,5 @@ document.addEventListener('DOMContentLoaded', () => {
     });
   });
 
-  renderPreset('filter');
+  selectPreset('filter');
 });
