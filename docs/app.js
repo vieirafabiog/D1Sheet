@@ -2,10 +2,12 @@
 const I18N = {
   en: {
     nav_why: 'Why D1Sheet',
+    nav_arch: 'Architecture',
     nav_sim: 'Simulator',
     nav_config: 'Config',
     nav_deploy: 'Deploy',
     nav_api: 'API Reference',
+    nav_local: 'Local Dev',
     nav_connect: 'Integrations',
 
     hero_badge: 'D1 · OData v4 Gateway',
@@ -166,10 +168,12 @@ const I18N = {
   },
   pt: {
     nav_why: 'Por que D1Sheet',
+    nav_arch: 'Arquitetura',
     nav_sim: 'Simulador',
     nav_config: 'Configuração',
     nav_deploy: 'Deploy',
     nav_api: 'API & Queries',
+    nav_local: 'Dev Local',
     nav_connect: 'Integrações',
 
     hero_badge: 'D1 · Gateway OData v4',
@@ -671,6 +675,46 @@ document.addEventListener('DOMContentLoaded', () => {
       }
     });
   });
+
+  // Smooth anchor scrolling with exact sticky navbar offset
+  const navbar = document.querySelector('.navbar');
+  document.querySelectorAll('a[href^="#"]').forEach((anchor) => {
+    anchor.addEventListener('click', (e) => {
+      const href = anchor.getAttribute('href');
+      if (!href || href === '#') return;
+      const target = document.querySelector(href);
+      if (!target) return;
+
+      e.preventDefault();
+      const navHeight = navbar ? navbar.offsetHeight : 64;
+      const targetTop = target.getBoundingClientRect().top + window.scrollY - navHeight - 8;
+      window.scrollTo({ top: Math.max(0, targetTop), behavior: 'smooth' });
+      history.replaceState(null, '', href);
+    });
+  });
+
+  // Highlight active section in navbar
+  const navLinks = Array.from(document.querySelectorAll('.nav-links a[href^="#"]'));
+  const observedSections = navLinks
+    .map((link) => document.querySelector(link.getAttribute('href')))
+    .filter(Boolean);
+
+  if ('IntersectionObserver' in window && observedSections.length > 0) {
+    const observer = new IntersectionObserver(
+      (entries) => {
+        entries.forEach((entry) => {
+          if (entry.isIntersecting) {
+            const activeId = `#${entry.target.id}`;
+            navLinks.forEach((link) => {
+              link.classList.toggle('active', link.getAttribute('href') === activeId);
+            });
+          }
+        });
+      },
+      { rootMargin: '-30% 0px -60% 0px', threshold: 0 }
+    );
+    observedSections.forEach((sec) => observer.observe(sec));
+  }
 
   selectPreset('filter');
 });
