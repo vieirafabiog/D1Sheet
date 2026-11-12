@@ -1077,16 +1077,37 @@ footer {
 .footer-links {
   display: flex;
   flex-wrap: wrap;
+  align-items: center;
   gap: 20px;
 }
 
 .footer-links a {
+  display: inline-flex;
+  align-items: center;
+  gap: 6px;
   color: var(--text-secondary);
   text-decoration: none;
+  transition: color 0.15s;
 }
 
 .footer-links a:hover {
   color: var(--text);
+}
+
+.footer-author {
+  margin-top: 6px;
+  font-size: 0.8rem;
+  color: var(--text-muted);
+}
+
+.footer-author a {
+  color: var(--text-secondary);
+  text-decoration: none;
+  font-weight: 500;
+}
+
+.footer-author a:hover {
+  color: var(--orange);
 }
 
 /* Responsive */
